@@ -1,0 +1,15 @@
+services:
+  hypervel:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: video-assistant/hypervel:latest
+    container_name: video-assistant
+    ports:
+      - "9501:9501"
+    volumes:
+      - ./:/var/www
+    privileged: true
+    user: root
+    working_dir: /var/www
+    command: /bin/bash -c "/usr/bin/php /var/www/artisan watch"

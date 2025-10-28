@@ -1,0 +1,18 @@
+services:
+  hypervel:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: video-assistant/hypervel:latest
+    container_name: video-assistant
+    ports:
+      - "9501:9501"
+    privileged: true
+    user: root
+    working_dir: /var/www
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
