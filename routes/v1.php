@@ -80,6 +80,43 @@ Route::group('/media', function () {
     );
 }, ['as' => 'media']);
 
+Route::group('/subscriptions', function () {
+    Route::get(
+        '/',
+        [
+            'as' => 'index',
+            'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@index',
+            'middleware' => ['auth'],
+        ]
+    );
+    Route::post('/', [
+        'as' => 'store',
+        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@store',
+        'middleware' => ['auth'],
+    ]);
+    Route::delete('/{subscriptionId}', [
+        'as' => 'destroy',
+        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@destroy',
+        'middleware' => ['auth'],
+    ]);
+
+    Route::get('/usage', [
+        'as' => 'usage',
+        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@usage',
+        'middleware' => ['auth'],
+    ]);
+
+    Route::group('/plans', function () {
+        Route::get(
+            '/',
+            [
+                'as' => 'index',
+                'uses' => \App\Http\Controllers\API\V1\Subscriptions\PlansController::class . '@index',
+            ]
+        );
+    }, ['as' => 'plans']);
+}, ['as' => 'subscriptions']);
+
 Route::group('/webhook', function () {
     Route::any(
         'youtube',
