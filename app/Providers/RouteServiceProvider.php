@@ -22,7 +22,7 @@ class RouteServiceProvider extends BaseServiceProvider
         Route::group(
             '/api',
             base_path('routes/api.php'),
-            ['middleware' => 'api', 'as' => 'api.']
+            ['middleware' => 'api', 'as' => 'api']
         );
 
         Route::group(
@@ -30,7 +30,7 @@ class RouteServiceProvider extends BaseServiceProvider
             base_path('routes/v1.php'),
             [
                 'middleware' => 'api',
-                'as' => 'v1.',
+                'as' => 'api.v1',
             ]
         );
 

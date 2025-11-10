@@ -1,0 +1,120 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Jobs\Rss;
+
+use App\Models\Media;
+use App\Models\Rss;
+use Hypervel\Queue\Contracts\ShouldQueue;
+use Hypervel\Queue\Queueable;
+
+class SyncJob implements ShouldQueue
+{
+    use Queueable;
+
+    protected Rss $rss;
+
+    /**
+     * Create a new job instance.
+     */
+    public function __construct(Rss $rss)
+    {
+        $this->rss = $rss;
+    }
+
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
+    {
+        $xml = simplexml_load_file($this->rss->url);
+
+        if ($xml === false) {
+            return;
+        }
+
+        $namespaces = $xml->getNamespaces(true);
+
+        echo '頻道名稱: ' . $xml->title . PHP_EOL;
+
+        $insertData = [];
+
+        foreach ($xml->entry as $entry) {
+            $data = [
+                'id' => (string) $entry->id,
+                'yt:videoId' => (string) $entry->children($namespaces['yt'])->videoId,
+                'yt:channelId' => (string) $entry->children($namespaces['yt'])->channelId,
+                'title' => (string) $entry->title,
+                'description' => (string) $entry->description,
+                'link' => (string) $entry->link['href'],
+                'author' => [
+                    'name' => (string) $entry->author->name,
+                    'uri' => (string) $entry->author->uri,
+                ],
+                'published' => (string) $entry->published,
+                'updated' => (string) $entry->updated,
+                'media' => json_decode(json_encode($entry->children($namespaces['media'])->group), true),
+            ];
+            $data['media']['content']['url'] = (string) $entry->children(
+                $namespaces['media']
+            )->group->content->attributes()['url'];
+            $data['media']['thumbnail']['url'] = (string) $entry->children(
+                $namespaces['media']
+            )->group->thumbnail->attributes()['url'];
+            $data['media']['community']['statistics']['views'] = (string) $entry->children(
+                $namespaces['media']
+            )->group->community->statistics->attributes()['views'];
+            $data['media']['community']['starRating'] = [
+                'average' => (string) $entry->children($namespaces['media'])->group->community->starRating->attributes(
+                )['average'],
+                'max' => (string) $entry->children($namespaces['media'])->group->community->starRating->attributes(
+                )['max'],
+                'min' => (string) $entry->children($namespaces['media'])->group->community->starRating->attributes(
+                )['min'],
+                'count' => (string) $entry->children($namespaces['media'])->group->community->starRating->attributes(
+                )['count'],
+            ];
+            $insertData[] = $data;
+        }
+
+        $ids = array_column($insertData, 'id');
+
+        $medias = Media::whereIn('resource_id', $ids)->select(['id', 'resource_id'])->get();
+        $intersectIds = array_values(array_intersect($ids, $medias->pluck('resource_id')->toArray()));
+
+        foreach ($insertData as $data) {
+            if (in_array($data['id'], $intersectIds)) {
+                continue;
+            }
+
+            $media = Media::create([
+                'type' => Media::TYPE_YOUTUBE,
+                'title' => $data['title'],
+                'resource_id' => $data['id'],
+                'description' => is_string($data['media']['description'])
+                    ? $data['media']['description']
+                    : '',
+                'duration' => 0,
+                'video_detail' => $data,
+                'audio_detail' => [],
+            ]);
+            $medias->push($media);
+        }
+
+        $userIds = $this->rss->users()->get(['id'])->pluck('id')->toArray();
+
+        if (empty($userIds)) {
+            return;
+        }
+
+        $syncData = [];
+        foreach ($userIds as $userId) {
+            $syncData[$userId] = ['rss_id' => $this->rss->id];
+        }
+
+        foreach ($medias as $media) {
+            $media->users()->syncWithoutDetaching($syncData);
+        }
+    }
+}

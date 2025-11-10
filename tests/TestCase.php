@@ -10,4 +10,13 @@ use Hypervel\Foundation\Testing\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     use RunTestsInCoroutine;
+
+    public function fakeLogin(): \Hypervel\Database\Eloquent\Collection|\Hypervel\Database\Eloquent\Model|null
+    {
+        $user = \App\Models\User::factory()->create();
+
+        $this->actingAs($user);
+
+        return $user;
+    }
 }

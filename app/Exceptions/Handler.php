@@ -35,4 +35,14 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
         });
     }
+
+    protected function unauthenticated($request, $exception): \Psr\Http\Message\ResponseInterface
+    {
+        // Return JSON for requests that expect JSON or for API routes
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json(['message' => ['Unauthenticated.']], 401);
+        }
+
+        return response()->make('Unauthenticated.', 401);
+    }
 }

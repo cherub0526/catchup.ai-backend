@@ -25,12 +25,17 @@ class Media extends Model
 
     public const TYPE_SPOTIFY = 'spotify';
 
-    public array $statusMap = [
+    public static array $statusMap = [
         self::STATUS_CREATED => '已建立',
         self::STATUS_PROGRESS => '處理中',
         self::STATUS_READY => '完成',
         self::STATUS_CANCELLED => '取消',
         self::STATUS_FAILED => '失敗',
+    ];
+
+    public static array $typeMaps = [
+        self::TYPE_YOUTUBE => 'YouTube',
+        self::TYPE_SPOTIFY => 'Spotify',
     ];
 
     protected ?string $table = 'media';
@@ -56,6 +61,11 @@ class Media extends Model
         'video_detail' => 'array',
         'audio_detail' => 'array',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'userables', 'media_id', 'user_id')->withTimestamps();
+    }
 
     public function captions(): HasMany
     {

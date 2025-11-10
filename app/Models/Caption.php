@@ -15,7 +15,7 @@ class Caption extends Model
 
     public const LOCAL_EN = 'en';
 
-    public array $localeMap = [
+    public static array $localeMaps = [
         self::LOCAL_ZH_TW => '繁體中文',
         self::LOCAL_EN => '英文',
     ];

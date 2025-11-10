@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Hypervel\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
+use Hypervel\Support\Facades\Route;
 
-Route::any('/', [IndexController::class, 'index']);
+Route::any('/', ['as', 'index', 'uses' => IndexController::class . '@index']);

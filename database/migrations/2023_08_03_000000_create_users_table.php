@@ -13,10 +13,13 @@ return new class extends \App\Utils\BaseMigration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('account')->index()->nullable()->comment('帳號');
             $table->string('name')->comment('姓名');
-            $table->string('email')->unique()->comment('電子郵件');
+            $table->string('email')->nullable()->comment('電子郵件');
             $table->timestamp('email_verified_at')->nullable()->comment('驗證時間');
             $table->string('password')->comment('密碼');
+            $table->string('social_type')->nullable()->comment('社群類型');
+
             $this->timestampsWithIndex($table, false, true);
 
             $table->comment('使用者');

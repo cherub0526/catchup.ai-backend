@@ -4,12 +4,90 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Exceptions\InvalidRequestException;
+use App\Http\Controllers\AbstractController;
+use App\Models\User;
+use App\Validators\AuthValidator;
 use Hypervel\Http\Request;
 
-class AuthController
+class AuthController extends AbstractController
 {
-    public function store(Request $request)
+    /**
+     * @throws InvalidRequestException
+     */
+    public function store(Request $request): \Psr\Http\Message\ResponseInterface
     {
-        return response()->json([]);
+        $params = $request->only(['account', 'password']);
+
+        $v = new AuthValidator($params);
+        $v->setStoreRules();
+
+        if (! $v->passes()) {
+            throw new InvalidRequestException($v->errors()->toArray());
+        }
+
+        if (! $this->guard()->attempt($params)) {
+            throw new InvalidRequestException(['password' => ['Invalid email or password.']]);
+        }
+
+        return $this->responseAccessToken(auth()->login($request->user()));
+    }
+
+    /**
+     * @throws InvalidRequestException
+     */
+    public function register(Request $request): \Psr\Http\Message\ResponseInterface
+    {
+        $params = $request->only(['account', 'email', 'password', 'password_confirmation']);
+
+        $v = new AuthValidator($params);
+        $v->setRegisterRules();
+
+        if (! $v->passes()) {
+            throw new InvalidRequestException($v->errors()->toArray());
+        }
+
+        if (! $user = User::where(['account' => $params['account'], 'social_type' => User::SOCIAL_TYPE_LOCAL])->first(
+        )) {
+            $user = User::create([
+                'account' => $params['account'],
+                'name' => $params['account'],
+                'email' => $params['email'],
+                'password' => bcrypt($params['password']),
+                'social_type' => User::SOCIAL_TYPE_LOCAL,
+            ]);
+        }
+
+        $token = $this->guard()->login($user);
+
+        return $this->responseAccessToken($token);
+    }
+
+    public function refresh()
+    {
+        $token = $this->guard()->refresh();
+
+        return $this->responseAccessToken($token);
+    }
+
+    public function logout(): \Psr\Http\Message\ResponseInterface
+    {
+        $this->guard()->logout();
+
+        return response()->make(self::RESPONSE_OK, 200);
+    }
+
+    private function guard()
+    {
+        return auth('jwt');
+    }
+
+    private function responseAccessToken(string $token): \Psr\Http\Message\ResponseInterface
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => config('jwt.ttl') * 60,
+        ]);
     }
 }

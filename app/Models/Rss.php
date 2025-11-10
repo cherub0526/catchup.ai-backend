@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\SoftDeletes;
 
 class Rss extends Model
@@ -12,7 +13,7 @@ class Rss extends Model
 
     public const TYPE_YOUTUBE = 'youtube';
 
-    public array $typeMaps = [
+    public static array $typeMaps = [
         self::TYPE_YOUTUBE => 'Youtube',
     ];
 
@@ -31,5 +32,22 @@ class Rss extends Model
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = [];
+    protected array $casts = [
+        'url' => 'string',
+    ];
+
+    public function users()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'userables',
+            'rss_id',
+            'user_id'
+        )->withTimestamps();
+    }
+
+    public function syncHistories(): HasMany
+    {
+        return $this->hasMany(RssSyncHistory::class, 'rss_id', 'id');
+    }
 }
