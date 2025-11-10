@@ -6,10 +6,8 @@ namespace App\Http\Resources;
 
 use Hypervel\Http\Resources\Json\JsonResource;
 
-class RSSResource extends JsonResource
+class MediaResource extends JsonResource
 {
-    public ?string $wrap = null;
-
     /**
      * Transform the resource into an array.
      */
@@ -17,10 +15,12 @@ class RSSResource extends JsonResource
     {
         return [
             'id' => intval($this->resource->id),
+            'url' => strval('https://www.youtube.com/embed/' . $this->resource->video_detail['yt:videoId']),
             'type' => strval($this->resource->type),
-            'url' => strval($this->resource->url),
             'title' => strval($this->resource->title),
-            'created_at' => strval($this->resource->created_at),
+            'description' => strval($this->resource->description),
+            'thumbnail' => strval($this->resource->thumbnail),
+            'published_at' => strval($this->resource->published_at),
         ];
     }
 }

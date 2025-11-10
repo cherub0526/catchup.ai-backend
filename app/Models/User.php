@@ -49,8 +49,13 @@ class User extends Authenticatable
         )->wherePivot('media_id', null)->withTimestamps();
     }
 
-    public function medias()
+    public function media()
     {
-        return $this->morphToMany(Media::class, 'userable')->withTimestamps();
+        return $this->belongsToMany(
+            Media::class,
+            'userables',
+            'user_id',
+            'media_id'
+        )->withTimestamps();
     }
 }

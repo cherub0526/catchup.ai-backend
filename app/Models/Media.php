@@ -49,6 +49,9 @@ class Media extends Model
         'title',
         'description',
         'duration',
+        'thumbnail',
+        'published_at',
+        'status',
         'video_detail',
         'audio_detail',
     ];

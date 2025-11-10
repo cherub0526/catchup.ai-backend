@@ -6,6 +6,7 @@ namespace App\Jobs\Rss;
 
 use App\Models\Media;
 use App\Models\Rss;
+use Carbon\Carbon;
 use Hypervel\Queue\Contracts\ShouldQueue;
 use Hypervel\Queue\Queueable;
 
@@ -96,6 +97,9 @@ class SyncJob implements ShouldQueue
                     ? $data['media']['description']
                     : '',
                 'duration' => 0,
+                'thumbnail' => $data['media']['thumbnail']['url'] ?? '',
+                'published_at' => Carbon::parse($data['published']),
+                'status' => Media::STATUS_CREATED,
                 'video_detail' => $data,
                 'audio_detail' => [],
             ]);

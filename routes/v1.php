@@ -61,6 +61,25 @@ Route::group('/rss', function () {
     ]);
 }, ['as' => 'rss']);
 
+Route::group('/media', function () {
+    Route::get(
+        '/',
+        [
+            'as' => 'index',
+            'uses' => \App\Http\Controllers\API\V1\MediaController::class . '@index',
+            'middleware' => ['auth'],
+        ]
+    );
+    Route::get(
+        '/{mediaId}',
+        [
+            'as' => 'show',
+            'uses' => \App\Http\Controllers\API\V1\MediaController::class . '@show',
+            'middleware' => ['auth'],
+        ]
+    );
+}, ['as' => 'media']);
+
 Route::group('/webhook', function () {
     Route::any(
         'youtube',
