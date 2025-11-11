@@ -30,7 +30,13 @@ class Caption extends Model
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = [];
+    protected array $casts = [
+        'media_id' => 'integer',
+        'locale' => 'string',
+        'text' => 'string',
+        'segments' => 'array',
+        'word_segments' => 'array',
+    ];
 
     public function media(): BelongsTo
     {

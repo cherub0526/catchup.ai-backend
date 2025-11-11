@@ -8,6 +8,8 @@ use Hypervel\Http\Resources\Json\JsonResource;
 
 class MediaResource extends JsonResource
 {
+    public ?string $wrap = null;
+
     /**
      * Transform the resource into an array.
      */

@@ -78,6 +78,25 @@ Route::group('/media', function () {
             'middleware' => ['auth'],
         ]
     );
+
+    Route::group('/{mediaId}/captions', function () {
+        Route::get(
+            '/',
+            [
+                'as' => 'index',
+                'uses' => \App\Http\Controllers\API\V1\Media\CaptionsController::class . '@index',
+                'middleware' => ['auth'],
+            ]
+        );
+        Route::get(
+            '/{captionId}',
+            [
+                'as' => 'show',
+                'uses' => \App\Http\Controllers\API\V1\Media\CaptionsController::class . '@show',
+                'middleware' => ['auth'],
+            ]
+        );
+    }, ['as' => 'captions']);
 }, ['as' => 'media']);
 
 Route::group('/subscriptions', function () {
