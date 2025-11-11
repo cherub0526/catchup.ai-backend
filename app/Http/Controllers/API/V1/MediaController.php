@@ -16,7 +16,7 @@ class MediaController
      */
     public function index(Request $request): \Hypervel\Http\Resources\Json\AnonymousResourceCollection
     {
-        $params = $request->only(['type', 'limit']);
+        $params = $request->only(['type', 'range', 'limit']);
         $v = new MediaValidator($params);
         $v->setIndexRules();
 
@@ -24,9 +24,20 @@ class MediaController
             throw new InvalidRequestException($v->errors()->toArray());
         }
 
-        // TODO. add filter by date range
         $media = $request->user()->media()
             ->where('type', $params['type'])
+            ->when($params['range'] ?? false, function ($query) use ($params) {
+                $date = match ($params['range']) {
+                    'today' => now()->startOfDay(),
+                    'week' => now()->subWeek()->startOfDay(),
+                    'month' => now()->subMonth()->startOfDay(),
+                    'year' => now()->subYear()->startOfDay(),
+                    default => null,
+                };
+                if ($date) {
+                    $query->where('published_at', '>=', $date);
+                }
+            })
             ->orderByDesc('published_at')
             ->paginate(
                 $params['limit'] ?? 12
