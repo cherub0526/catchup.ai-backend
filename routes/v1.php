@@ -79,6 +79,25 @@ Route::group('/media', function () {
         ]
     );
 
+    Route::group('/{mediaId}/summaries', function () {
+        Route::get(
+            '/',
+            [
+                'as' => 'index',
+                'uses' => \App\Http\Controllers\API\V1\Media\SummariesController::class . '@index',
+                'middleware' => ['auth'],
+            ]
+        );
+        Route::get(
+            '/{summaryId}',
+            [
+                'as' => 'show',
+                'uses' => \App\Http\Controllers\API\V1\Media\SummariesController::class . '@show',
+                'middleware' => ['auth'],
+            ]
+        );
+    }, ['as' => 'summaries']);
+
     Route::group('/{mediaId}/captions', function () {
         Route::get(
             '/',
@@ -97,6 +116,14 @@ Route::group('/media', function () {
             ]
         );
     }, ['as' => 'captions']);
+
+    Route::group('/{mediaId}/chat', function () {
+        Route::post('/', [
+            'as' => 'store',
+            'uses' => \App\Http\Controllers\API\V1\Media\ChatController::class . '@store',
+            'middleware' => ['auth'],
+        ]);
+    }, ['as' => 'chat']);
 }, ['as' => 'media']);
 
 Route::group('/subscriptions', function () {

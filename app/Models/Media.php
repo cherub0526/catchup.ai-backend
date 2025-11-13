@@ -65,7 +65,7 @@ class Media extends Model
         'audio_detail' => 'array',
     ];
 
-    public function users()
+    public function users(): \Hyperf\Database\Model\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'userables', 'media_id', 'user_id')->withTimestamps();
     }
@@ -73,5 +73,10 @@ class Media extends Model
     public function captions(): HasMany
     {
         return $this->hasMany(Caption::class, 'media_id', 'id');
+    }
+
+    public function summaries(): HasMany
+    {
+        return $this->hasMany(Summary::class, 'media_id', 'id');
     }
 }
