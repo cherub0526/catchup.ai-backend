@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\V1\Media;
 
 use App\Exceptions\InvalidRequestException;
+use App\Services\Prompts\TemplateCompletionManager;
+use App\Services\Prompts\TemplateFactory;
 use App\Utils\OpenAI\Completion;
 use App\Validators\ChatValidator;
 use Hypervel\Http\Request;
@@ -31,10 +33,14 @@ class ChatController
 
         $completion = new Completion(env('OPENAI_API_KEY'));
 
-        $response = $completion->completions(
-            'gpt-3.5-turbo',
-            $params['messages']
-        );
+        $userMessage = collect($params['messages'])->last()['content'] ?? '';
+
+        $template = TemplateFactory::create('assistant', [
+            'user_prompt' => $media->captions()->first()->text ?? '',
+            'messages' => array_pop($params['messages']),
+        ]);
+        $openai = new TemplateCompletionManager($completion, $template);
+        $response = $openai->complete($userMessage, 'gpt-4.1-mini');
 
         return response()->json([
             'role' => 'assistant',
