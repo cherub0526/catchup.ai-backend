@@ -35,6 +35,12 @@ Route::group('/users', function () {
             'middleware' => ['auth'],
         ]
     );
+
+    Route::put('/', [
+        'as' => 'update',
+        'uses' => \App\Http\Controllers\API\V1\UsersController::class . '@update',
+        'middleware' => ['auth'],
+    ]);
 }, ['as' => 'users']);
 
 Route::group('/rss', function () {

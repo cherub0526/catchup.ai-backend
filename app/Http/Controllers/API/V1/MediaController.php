@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\V1;
 
 use App\Exceptions\InvalidRequestException;
+use App\Http\Controllers\AbstractController;
 use App\Http\Resources\MediaResource;
 use App\Validators\MediaValidator;
 use Hypervel\Http\Request;
 
-class MediaController
+class MediaController extends AbstractController
 {
     /**
      * @throws InvalidRequestException

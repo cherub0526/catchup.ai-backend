@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Http\Controllers\AbstractController;
 use Hypervel\Http\Request;
 
-class SubscriptionsController
+class SubscriptionsController extends AbstractController
 {
     public function index(Request $request)
     {

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\V1;
 
 use App\Exceptions\InvalidRequestException;
+use App\Http\Controllers\AbstractController;
 use App\Http\Resources\RSSResource;
 use App\Jobs\Rss\SyncJob;
 use App\Models\Rss;
 use App\Validators\RSSValidator;
 use Hypervel\Http\Request;
 
-class RSSController
+class RSSController extends AbstractController
 {
     /**
      * @throws InvalidRequestException

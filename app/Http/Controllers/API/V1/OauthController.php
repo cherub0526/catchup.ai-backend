@@ -10,7 +10,7 @@ use App\Validators\OauthValidator;
 use Hypervel\Http\Request;
 use Hypervel\Socialite\Facades\Socialite;
 
-class OauthController
+class OauthController extends AbstractController
 {
     /**
      * @throws InvalidRequestException
