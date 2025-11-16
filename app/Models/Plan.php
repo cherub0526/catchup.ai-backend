@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Hyperf\Database\Model\SoftDeletes;
+use Hypervel\Database\Eloquent\Concerns\HasUuids;
 
-class SubscribePlan extends Model
+class Plan extends Model
 {
+    use HasUuids;
     use SoftDeletes;
 
     public const STATUS_ACTIVE = 'active';
@@ -19,16 +21,18 @@ class SubscribePlan extends Model
         self::STATUS_INACTIVE => 'Inactive',
     ];
 
-    protected ?string $table = 'subscribe_plans';
+    protected ?string $table = 'plans';
 
     /**
      * The attributes that are mass assignable.
      */
     protected array $fillable = [
+        'paddle_plan_id',
         'title',
         'description',
-        'monthly_price',
-        'yearly_price',
+        'channel_limit',
+        'video_limit',
+        'chat_limit',
         'sort',
         'status',
     ];
@@ -36,5 +40,17 @@ class SubscribePlan extends Model
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = [];
+    protected array $casts = [
+        'sort' => 'integer',
+    ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function prices(): \Hypervel\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Price::class, 'plan_id', 'id');
+    }
 }

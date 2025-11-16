@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\SubscribePlan;
+use App\Models\Plan;
 use Hypervel\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<SubscribePlan>
+ * @extends Factory<Plan>
  */
-class SubscribePlanFactory extends Factory
+class PlanFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,7 +20,6 @@ class SubscribePlanFactory extends Factory
     public function definition(): array
     {
         return [
-            //
         ];
     }
 }

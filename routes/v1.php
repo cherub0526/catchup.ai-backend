@@ -157,17 +157,17 @@ Route::group('/subscriptions', function () {
         'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@usage',
         'middleware' => ['auth'],
     ]);
-
-    Route::group('/plans', function () {
-        Route::get(
-            '/',
-            [
-                'as' => 'index',
-                'uses' => \App\Http\Controllers\API\V1\Subscriptions\PlansController::class . '@index',
-            ]
-        );
-    }, ['as' => 'plans']);
 }, ['as' => 'subscriptions']);
+
+Route::group('/plans', function () {
+    Route::get(
+        '/',
+        [
+            'as' => 'index',
+            'uses' => \App\Http\Controllers\API\V1\Subscriptions\PlansController::class . '@index',
+        ]
+    );
+}, ['as' => 'plans']);
 
 Route::group('/webhook', function () {
     Route::any(

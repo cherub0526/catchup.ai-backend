@@ -17,7 +17,9 @@
         "friendsofhyperf/tinker": "~3.1.0",
         "hypervel/framework": "^0.3",
         "hypervel/redis": "^0.3",
-        "hypervel/socialite": "^0.3.8"
+        "hypervel/socialite": "^0.3.8",
+        "paddlehq/paddle-php-sdk": "^1.14",
+        "php-http/guzzle7-adapter": "^1.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24.1",
@@ -52,7 +54,10 @@
     "prefer-stable": true,
     "config": {
         "optimize-autoloader": true,
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "extra": {
         "hypervel": {
