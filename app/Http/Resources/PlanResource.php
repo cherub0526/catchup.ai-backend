@@ -23,7 +23,7 @@ class PlanResource extends JsonResource
             'video_limit' => intval($this->resource->video_limit),
             'chat_limit' => intval($this->resource->chat_limit),
             'prices' => PriceResource::collection($this->whenLoaded('prices')),
-            'paddle_plan_id' => strval($this->resource->paddle_plan_id),
+            'paddle' => new PaddleResource($this->whenLoaded('paddle')),
         ];
     }
 }

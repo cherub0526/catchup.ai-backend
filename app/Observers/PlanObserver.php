@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Plan;
-use Paddle\SDK\Client;
+use App\Services\PaddleClient;
 use Paddle\SDK\Entities\Shared\TaxCategory;
 use Paddle\SDK\Exceptions\ApiError;
 use Paddle\SDK\Exceptions\ApiError\ProductApiError;
@@ -20,17 +20,10 @@ class PlanObserver
      */
     public function created(Plan $plan): void
     {
-        $paddle = new Client(
-            apiKey: env('PADDLE_API_KEY'),
-            options: new \Paddle\SDK\Options(
-                env('PADDLE_SANDBOX') === 'true' || env('PADDLE_SANDBOX') === true
-                    ? \Paddle\SDK\Environment::SANDBOX
-                    : \Paddle\SDK\Environment::PRODUCTION
-            )
-        );
+        $paddle = new PaddleClient();
 
         try {
-            $product = $paddle->products->create(
+            $product = $paddle->products()->create(
                 new CreateProduct(
                     name: $plan->title,
                     taxCategory: TaxCategory::Standard(),
@@ -38,7 +31,11 @@ class PlanObserver
                 )
             );
 
-            $plan->fill(['paddle_plan_id' => $product->id])->save();
+            $plan->paddle()->create([
+                'foreign_type' => Plan::class,
+                'paddle_id' => $product->id,
+                'paddle_detail' => $product,
+            ]);
         } catch (ProductApiError $e) {
         } catch (ApiError $e) {
         } catch (MalformedResponse $e) {
@@ -50,17 +47,10 @@ class PlanObserver
      */
     public function updated(Plan $plan): void
     {
-        $paddle = new Client(
-            apiKey: env('PADDLE_API_KEY'),
-            options: new \Paddle\SDK\Options(
-                env('PADDLE_SANDBOX') === 'true' || env('PADDLE_SANDBOX') === true
-                    ? \Paddle\SDK\Environment::SANDBOX
-                    : \Paddle\SDK\Environment::PRODUCTION
-            )
-        );
+        $paddle = new PaddleClient();
 
         try {
-            $paddle->products->update(
+            $paddle->products()->update(
                 $plan->paddle_plan_id,
                 new UpdateProduct(
                     name: $plan->title,

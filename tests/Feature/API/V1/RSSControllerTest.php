@@ -31,13 +31,17 @@ class RSSControllerTest extends TestCase
         $this->json('POST', $uri, $params)->assertStatus(422)
             ->assertJsonStructure(['messages' => ['url']]);
 
-        $params['url'] = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCAuUUnT6oDeKwE6v1NGQxug';
+        $params['url'] = 'UCAuUUnT6oDeKwE6v1NGQxug';
         $this->json('POST', $uri, $params)->assertStatus(201);
 
         $this->assertDatabaseHas('rss', [
-            'user_id' => $user->id,
             'type' => Rss::TYPE_YOUTUBE,
             'url' => 'https://www.youtube.com/feeds/videos.xml?channel_id=UCAuUUnT6oDeKwE6v1NGQxug',
+        ]);
+
+        $this->assertDatabaseHas('userables', [
+            'user_id' => $user->id,
+            'rss_id' => 1,
         ]);
     }
 }

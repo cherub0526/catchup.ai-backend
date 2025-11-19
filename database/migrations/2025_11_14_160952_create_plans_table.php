@@ -13,7 +13,6 @@ return new class extends \App\Utils\BaseMigration {
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('paddle_plan_id')->nullable()->comment('Paddle 方案ID');
             $table->string('title')->comment('方案名稱');
             $table->text('description')->nullable()->comment('方案描述');
             $table->unsignedInteger('channel_limit')->default(0)->comment('頻道數量限制，0表示不限制');

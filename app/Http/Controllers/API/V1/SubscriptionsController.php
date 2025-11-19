@@ -15,6 +15,8 @@ class SubscriptionsController extends AbstractController
 
     public function store(Request $request)
     {
+        $params = $request->only(['transaction_id']);
+        
     }
 
     public function destroy(Request $request, int $subscriptionId)

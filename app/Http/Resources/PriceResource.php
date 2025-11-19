@@ -17,9 +17,9 @@ class PriceResource extends JsonResource
     {
         return [
             'id' => strval($this->resource->id),
-            'paddle_price_id' => strval($this->resource->paddle_price_id),
             'unit' => strval($this->resource->unit),
             'price' => floatval($this->resource->price),
+            'paddle' => new PaddleResource($this->whenLoaded('paddle')),
         ];
     }
 }

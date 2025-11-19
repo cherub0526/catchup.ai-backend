@@ -6,20 +6,23 @@ namespace App\Models;
 
 use Hyperf\Database\Model\SoftDeletes;
 use Hypervel\Database\Eloquent\Concerns\HasUuids;
+use Hypervel\Database\Eloquent\Relations\HasOne;
 
 class Plan extends Model
 {
     use HasUuids;
     use SoftDeletes;
 
-    public const STATUS_ACTIVE = 'active';
+    public const string STATUS_ACTIVE = 'active';
 
-    public const STATUS_INACTIVE = 'inactive';
+    public const string STATUS_INACTIVE = 'inactive';
 
     public static array $statusMaps = [
         self::STATUS_ACTIVE => 'Active',
         self::STATUS_INACTIVE => 'Inactive',
     ];
+
+    protected array $with = ['paddle'];
 
     protected ?string $table = 'plans';
 
@@ -27,7 +30,6 @@ class Plan extends Model
      * The attributes that are mass assignable.
      */
     protected array $fillable = [
-        'paddle_plan_id',
         'title',
         'description',
         'channel_limit',
@@ -52,5 +54,10 @@ class Plan extends Model
     public function prices(): \Hypervel\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Price::class, 'plan_id', 'id');
+    }
+
+    public function paddle(): HasOne
+    {
+        return $this->hasOne(Paddle::class, 'foreign_id', 'id')->where('foreign_type', self::class);
     }
 }

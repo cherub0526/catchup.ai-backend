@@ -7,6 +7,7 @@ namespace App\Models;
 use Hyperf\Database\Model\SoftDeletes;
 use Hypervel\Database\Eloquent\Factories\HasFactory;
 use Hypervel\Database\Eloquent\Relations\HasMany;
+use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -20,6 +21,8 @@ class User extends Authenticatable
 
     public const SOCIAL_TYPE_GOOGLE = 'google';
 
+    protected array $with = ['paddle'];
+
     protected ?string $table = 'users';
 
     /**
@@ -32,6 +35,7 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'social_type',
+        'paddle_customer_id',
     ];
 
     public function oauths(): HasMany
@@ -57,5 +61,10 @@ class User extends Authenticatable
             'user_id',
             'media_id'
         )->withTimestamps();
+    }
+
+    public function paddle(): HasOne
+    {
+        return $this->hasOne(Paddle::class, 'foreign_id', 'id')->where('foreign_type', self::class);
     }
 }
