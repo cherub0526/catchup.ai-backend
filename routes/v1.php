@@ -60,7 +60,7 @@ Route::group('/rss', function () {
             'middleware' => ['auth'],
         ]
     );
-    Route::delete('/{rssId}', [
+    Route::delete('/{rssId:[0-9]+}', [
         'as' => 'destroy',
         'uses' => \App\Http\Controllers\API\V1\RSSController::class . '@destroy',
         'middleware' => ['auth'],
@@ -77,7 +77,7 @@ Route::group('/media', function () {
         ]
     );
     Route::get(
-        '/{mediaId}',
+        '/{mediaId:[0-9]+}',
         [
             'as' => 'show',
             'uses' => \App\Http\Controllers\API\V1\MediaController::class . '@show',
@@ -85,7 +85,7 @@ Route::group('/media', function () {
         ]
     );
 
-    Route::group('/{mediaId}/summaries', function () {
+    Route::group('/{mediaId:[0-9]+}/summaries', function () {
         Route::get(
             '/',
             [
@@ -95,7 +95,7 @@ Route::group('/media', function () {
             ]
         );
         Route::get(
-            '/{summaryId}',
+            '/{summaryId:[0-9]+}',
             [
                 'as' => 'show',
                 'uses' => \App\Http\Controllers\API\V1\Media\SummariesController::class . '@show',
@@ -104,7 +104,7 @@ Route::group('/media', function () {
         );
     }, ['as' => 'summaries']);
 
-    Route::group('/{mediaId}/captions', function () {
+    Route::group('/{mediaId:[0-9]+}/captions', function () {
         Route::get(
             '/',
             [
@@ -123,7 +123,7 @@ Route::group('/media', function () {
         );
     }, ['as' => 'captions']);
 
-    Route::group('/{mediaId}/chat', function () {
+    Route::group('/{mediaId:[0-9]+}/chat', function () {
         Route::post('/', [
             'as' => 'store',
             'uses' => \App\Http\Controllers\API\V1\Media\ChatController::class . '@store',
@@ -157,6 +157,14 @@ Route::group('/subscriptions', function () {
         'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@usage',
         'middleware' => ['auth'],
     ]);
+
+    Route::post(
+        '/webhook',
+        [
+            'as' => 'webhook',
+            'uses' => \App\Http\Controllers\API\V1\Subscriptions\WebhookController::class . '@store',
+        ]
+    );
 }, ['as' => 'subscriptions']);
 
 Route::group('/plans', function () {

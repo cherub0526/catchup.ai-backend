@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Hypervel\Database\Eloquent\Relations\BelongsTo;
+
 class Paddle extends Model
 {
     protected ?string $table = 'paddles';
@@ -25,8 +27,18 @@ class Paddle extends Model
         'paddle_detail' => 'array',
     ];
 
-    public function parent()
+    public function price(): BelongsTo
     {
-        return $this->belongsTo($this->foreign_type, 'foreign_type', 'id');
+        return $this->belongsTo($this->foreign_type, 'foreign_id', 'id');
+    }
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo($this->foreign_type, 'foreign_id', 'id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo($this->foreign_type, 'foreign_id', 'id');
     }
 }

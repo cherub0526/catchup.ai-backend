@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\AbstractController;
+use App\Services\PaddleClient;
 use Hypervel\Http\Request;
+use Paddle\SDK\Notifications\Secret;
+use Paddle\SDK\Notifications\Verifier;
 
 class SubscriptionsController extends AbstractController
 {
