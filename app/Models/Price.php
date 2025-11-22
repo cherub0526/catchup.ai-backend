@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Hyperf\Database\Model\Builder;
 use Hypervel\Database\Eloquent\Concerns\HasUuids;
 use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Database\Eloquent\SoftDeletes;
@@ -13,11 +14,11 @@ class Price extends Model
     use HasUuids;
     use SoftDeletes;
 
-    public const string UNIT_MONTHLY = 'monthly';
+    public const UNIT_MONTHLY = 'monthly';
 
-    public const string UNIT_QUARTERLY = 'quarterly';
+    public const UNIT_QUARTERLY = 'quarterly';
 
-    public const string UNIT_ANNUALLY = 'annually';
+    public const UNIT_ANNUALLY = 'annually';
 
     public static array $unitMaps = [
         self::UNIT_MONTHLY => '每月',
@@ -48,7 +49,7 @@ class Price extends Model
         return $this->belongsTo(Plan::class, 'plan_id', 'id');
     }
 
-    public function paddle(): HasOne
+    public function paddle(): Builder|HasOne
     {
         return $this->hasOne(Paddle::class, 'foreign_id', 'id')->where('foreign_type', self::class);
     }

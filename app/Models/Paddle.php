@@ -41,4 +41,14 @@ class Paddle extends Model
     {
         return $this->belongsTo($this->foreign_type, 'foreign_id', 'id');
     }
+
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo($this->foreign_type, 'foreign_id', 'id');
+    }
+
+    public function transaction(): BelongsTo
+    {
+        return $this->belongsTo($this->foreign_type, 'foreign_id', 'id');
+    }
 }

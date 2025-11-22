@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\SoftDeletes;
 use Hypervel\Database\Eloquent\Concerns\HasUuids;
 use Hypervel\Database\Eloquent\Relations\HasOne;
@@ -56,7 +57,7 @@ class Plan extends Model
         return $this->hasMany(Price::class, 'plan_id', 'id');
     }
 
-    public function paddle(): HasOne
+    public function paddle(): Builder|HasOne
     {
         return $this->hasOne(Paddle::class, 'foreign_id', 'id')->where('foreign_type', self::class);
     }

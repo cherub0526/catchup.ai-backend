@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\SoftDeletes;
 use Hypervel\Database\Eloquent\Factories\HasFactory;
 use Hypervel\Database\Eloquent\Relations\HasMany;
-use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -63,8 +63,13 @@ class User extends Authenticatable
         )->withTimestamps();
     }
 
-    public function paddle(): HasOne
+    public function paddle(): Builder|\Hypervel\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Paddle::class, 'foreign_id', 'id')->where('foreign_type', self::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class, 'user_id', 'id');
     }
 }
