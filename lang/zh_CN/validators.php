@@ -7,6 +7,7 @@ return [
         ],
         'media' => [
             'not_found' => '找不到指定的媒体。',
+            'caption_not_found' => '找不到指定的字幕。',
         ],
         'rss' => [
             'invalid_url' => '无效的 RSS 网址。',
@@ -17,6 +18,11 @@ return [
             'price_not_found' => '找不到指定的价格。',
             'price_not_in_plan' => '方案中找不到指定的价格。',
             'not_found' => '找不到指定的订阅。',
+        ],
+        'webhook' => [
+            'paddle' => [
+                'transaction_not_completed' => '交易状态未完成。',
+            ],
         ],
     ],
     'auth' => [

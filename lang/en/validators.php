@@ -9,6 +9,7 @@ return [
         ],
         'media' => [
             'not_found' => 'Media not found.',
+            'caption_not_found' => 'Caption not found.',
         ],
         'rss' => [
             'invalid_url' => 'Invalid RSS URL.',
@@ -19,6 +20,11 @@ return [
             'price_not_found' => 'Price not found.',
             'price_not_in_plan' => 'Price not found in plan.',
             'not_found' => 'Subscription not found.',
+        ],
+        'webhook' => [
+            'paddle' => [
+                'transaction_not_completed' => 'Transaction status is not completed.',
+            ],
         ],
     ],
     'auth' => [

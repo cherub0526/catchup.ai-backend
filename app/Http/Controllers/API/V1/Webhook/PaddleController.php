@@ -38,11 +38,11 @@ class PaddleController extends AbstractController
             $paddleTransaction = $paddleClient->transactions()->get($params['data']['id']);
 
             if ($paddleTransaction->status->getValue() !== TransactionStatus::Completed()->getValue()) {
-                throw new InvalidRequestException(['transaction' => ['Transaction status is not completed.']]);
+                throw new InvalidRequestException(['transaction' => [__('validators.controllers.webhook.paddle.transaction_not_completed')]]);
             }
 
             if (! $subscription = Subscription::query()->find($paddleTransaction->customData->data['subscriptionId'])) {
-                throw new InvalidRequestException(['subscription' => ['Subscription not found.']]);
+                throw new InvalidRequestException(['subscription' => [__('validators.controllers.subscription.not_found')]]);
             }
 
             $paddleSubscription = $paddleClient->subscriptions()->get($paddleTransaction->subscriptionId);

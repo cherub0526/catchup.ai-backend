@@ -28,7 +28,7 @@ class ChatController
         }
 
         if (! $media = $request->user()->media()->find($mediaId)) {
-            throw new InvalidRequestException(['media' => trans('messages.media.not_found')]);
+            throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
         $completion = new Completion(env('OPENAI_API_KEY'));

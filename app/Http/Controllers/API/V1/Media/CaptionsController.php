@@ -16,7 +16,7 @@ class CaptionsController
     public function index(Request $request, int $mediaId): \Hypervel\Http\Resources\Json\AnonymousResourceCollection
     {
         if (! $media = $request->user()->media()->find($mediaId)) {
-            throw new InvalidRequestException(['media' => ['Media not found.']]);
+            throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
         $captions = $media->captions()->get(['id', 'locale']);
@@ -30,11 +30,11 @@ class CaptionsController
     public function show(Request $request, int $mediaId, int $captionId): CaptionResource
     {
         if (! $media = $request->user()->media()->find($mediaId)) {
-            throw new InvalidRequestException(['media' => ['Media not found.']]);
+            throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
         if (! $caption = $media->captions()->find($captionId)) {
-            throw new InvalidRequestException(['caption' => ['Caption not found.']]);
+            throw new InvalidRequestException(['caption' => [__('validators.controllers.media.caption_not_found')]]);
         }
 
         return new CaptionResource($caption);

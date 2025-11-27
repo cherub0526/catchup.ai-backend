@@ -16,7 +16,7 @@ class SummariesController
     public function index(Request $request, int $mediaId)
     {
         if (! $media = $request->user()->media()->find($mediaId)) {
-            throw new InvalidRequestException(['media' => ['Media not found.']]);
+            throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
         $summary = $media->summaries()->first();
