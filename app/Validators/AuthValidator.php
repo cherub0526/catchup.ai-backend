@@ -11,18 +11,20 @@ class AuthValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'account.required' => 'Account is required.',
-            'account.string' => 'Account must be a string.',
-            'account.min' => 'Account must be at least 6 characters.',
-            'account.max' => 'Account must not exceed 255 characters.',
-            'account.unique' => 'Account already exists.',
-            'email.required' => 'Email is required.',
-            'email.email' => 'Email format is invalid.',
-            'email.max' => 'Email must not exceed 255 characters.',
-            'password.required' => 'Password is required.',
-            'password.string' => 'Password must be a string.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
+            'account.required' => __('validators.auth.account.required'),
+            'account.string' => __('validators.auth.account.string'),
+            'account.min' => __('validators.auth.account.min'),
+            'account.max' => __('validators.auth.account.max'),
+            'account.unique' => __('validators.auth.account.unique'),
+            'email.required' => __('validators.auth.email.required'),
+            'email.email' => __('validators.auth.email.email'),
+            'email.max' => __('validators.auth.email.max'),
+            'password.required' => __('validators.auth.password.required'),
+            'password.string' => __('validators.auth.password.string'),
+            'password.min' => __('validators.auth.password.min'),
+            'password.confirmed' => __('validators.auth.password.confirmed'),
+            'password_confirmation.required' => __('validators.auth.password_confirmation.required'),
+            'password_confirmation.string' => __('validators.auth.password_confirmation.string'),
         ];
     }
 

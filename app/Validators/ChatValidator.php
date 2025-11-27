@@ -11,14 +11,14 @@ class ChatValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'messages.required' => trans('Validators.Chat.messages.required'),
-            'messages.array' => trans('Validators.Chat.messages.array'),
-            'messages.min' => trans('Validators.Chat.messages.min'),
-            'messages.*.role.required' => trans('Validators.Chat.messages.role.required'),
-            'messages.*.role.string' => trans('Validators.Chat.messages.role.string'),
-            'messages.*.role.in' => trans('Validators.Chat.messages.role.in'),
-            'messages.*.content.required' => trans('Validators.Chat.messages.content.required'),
-            'messages.*.content.string' => trans('Validators.Chat.messages.content.string'),
+            'messages.required' => __('validators.chat.messages.required'),
+            'messages.array' => __('validators.chat.messages.array'),
+            'messages.min' => __('validators.chat.messages.min'),
+            'messages.*.role.required' => __('validators.chat.messages.role.required'),
+            'messages.*.role.string' => __('validators.chat.messages.role.string'),
+            'messages.*.role.in' => __('validators.chat.messages.role.in'),
+            'messages.*.content.required' => __('validators.chat.messages.content.required'),
+            'messages.*.content.string' => __('validators.chat.messages.content.string'),
         ];
     }
 

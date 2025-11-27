@@ -11,9 +11,9 @@ class OauthValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'provider.required' => 'The provider field is required.',
-            'provider.in' => 'The selected provider is invalid.',
-            'code.required' => 'The code field is required.',
+            'provider.required' => __('validators.oauth.provider.required'),
+            'provider.in' => __('validators.oauth.provider.in'),
+            'code.required' => __('validators.oauth.code.required'),
         ];
     }
 

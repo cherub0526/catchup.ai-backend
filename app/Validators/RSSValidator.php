@@ -11,10 +11,10 @@ class RSSValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'type.required' => trans('Validators.RSS.type.required'),
-            'type.string' => trans('Validators.RSS.type.string'),
-            'type.in' => trans('Validators.RSS.type.in'),
-            'url.required' => trans('Validators.RSS.url.required'),
+            'type.required' => __('validators.rss.type.required'),
+            'type.string' => __('validators.rss.type.string'),
+            'type.in' => __('validators.rss.type.in'),
+            'url.required' => __('validators.rss.url.required'),
         ];
     }
 

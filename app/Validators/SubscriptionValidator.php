@@ -11,10 +11,10 @@ class SubscriptionValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'planId.required' => trans(''),
-            'planId.string' => trans(''),
-            'priceId.required' => trans(''),
-            'priceId.required' => trans(''),
+            'planId.required' => __('validators.subscription.planId.required'),
+            'planId.string' => __('validators.subscription.planId.string'),
+            'priceId.required' => __('validators.subscription.priceId.required'),
+            'priceId.string' => __('validators.subscription.priceId.string'),
         ];
     }
 
