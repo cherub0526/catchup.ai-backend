@@ -6,15 +6,19 @@ namespace App\Models;
 
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\SoftDeletes;
-use Hypervel\Database\Eloquent\Factories\HasFactory;
-use Hypervel\Database\Eloquent\Relations\BelongsTo;
-use Hypervel\Database\Eloquent\Relations\HasMany;
 use Hypervel\Database\Eloquent\Relations\HasOne;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
+use Hypervel\Database\Eloquent\Relations\HasMany;
+use Hypervel\Database\Eloquent\Relations\BelongsTo;
+use Hypervel\Database\Eloquent\Factories\HasFactory;
 
 class Subscription extends Model
 {
+    use HasUlids;
     use SoftDeletes;
     use HasFactory;
+
+    public const STATUS_PAYING = 'paying';
 
     public const STATUS_TRIAL = 'trial';
 
@@ -25,6 +29,7 @@ class Subscription extends Model
     public const PAYMENT_METHOD_PADDLE = 'paddle';
 
     public static array $statusMaps = [
+        self::STATUS_PAYING => '付款中',
         self::STATUS_TRIAL => '試用中',
         self::STATUS_ACTIVE => '訂閱中',
         self::STATUS_CANCELED => '已取消',

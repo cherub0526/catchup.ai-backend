@@ -6,17 +6,17 @@ namespace App\Models;
 
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\SoftDeletes;
-use Hypervel\Database\Eloquent\Concerns\HasUuids;
 use Hypervel\Database\Eloquent\Relations\HasOne;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
 
 class Plan extends Model
 {
-    use HasUuids;
+    use HasUlids;
     use SoftDeletes;
 
-    public const string STATUS_ACTIVE = 'active';
+    public const STATUS_ACTIVE = 'active';
 
-    public const string STATUS_INACTIVE = 'inactive';
+    public const STATUS_INACTIVE = 'inactive';
 
     public static array $statusMaps = [
         self::STATUS_ACTIVE => 'Active',

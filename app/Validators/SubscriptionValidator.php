@@ -11,15 +11,18 @@ class SubscriptionValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'transaction_id.required' => trans('validation.subscription.transaction_id_required'),
-            'transaction_id.string' => trans('validation.subscription.transaction_id_string'),
+            'planId.required' => trans(''),
+            'planId.string' => trans(''),
+            'priceId.required' => trans(''),
+            'priceId.required' => trans(''),
         ];
     }
 
     public function setStoreRules(): self
     {
         $this->rules = [
-            'transaction_id' => 'required|string',
+            'planId' => 'required|string',
+            'priceId' => 'required|string',
         ];
 
         return $this;

@@ -6,8 +6,8 @@ namespace App\Observers;
 
 use App\Models\Plan;
 use App\Services\PaddleClient;
-use Paddle\SDK\Entities\Shared\TaxCategory;
 use Paddle\SDK\Exceptions\ApiError;
+use Paddle\SDK\Entities\Shared\TaxCategory;
 use Paddle\SDK\Exceptions\ApiError\ProductApiError;
 use Paddle\SDK\Exceptions\SdkExceptions\MalformedResponse;
 use Paddle\SDK\Resources\Products\Operations\CreateProduct;
@@ -51,7 +51,7 @@ class PlanObserver
 
         try {
             $paddle->products()->update(
-                $plan->paddle_plan_id,
+                $plan->paddle()->first()->paddle_id,
                 new UpdateProduct(
                     name: $plan->title,
                     description: $plan->description ?? ''

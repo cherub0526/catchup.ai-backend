@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Hyperf\Database\Model\Builder;
-use Hypervel\Database\Eloquent\Relations\BelongsTo;
+use Hypervel\Database\Eloquent\SoftDeletes;
 use Hypervel\Database\Eloquent\Relations\HasOne;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
+use Hypervel\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
+    use HasUlids;
+    use SoftDeletes;
+
     protected ?string $table = 'transactions';
 
     /**
@@ -20,7 +25,6 @@ class Transaction extends Model
         'billing_date',
         'amount',
         'status',
-        'raw_data',
     ];
 
     /**

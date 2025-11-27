@@ -146,6 +146,11 @@ Route::group('/subscriptions', function () {
         'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@store',
         'middleware' => ['auth'],
     ]);
+    Route::put('/{subscriptionId}', [
+        'as' => 'update',
+        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@update',
+        'middleware' => ['auth'],
+    ]);
     Route::delete('/{subscriptionId}', [
         'as' => 'destroy',
         'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@destroy',
@@ -157,14 +162,6 @@ Route::group('/subscriptions', function () {
         'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@usage',
         'middleware' => ['auth'],
     ]);
-
-    Route::post(
-        '/webhook',
-        [
-            'as' => 'webhook',
-            'uses' => \App\Http\Controllers\API\V1\Subscriptions\WebhookController::class . '@store',
-        ]
-    );
 }, ['as' => 'subscriptions']);
 
 Route::group('/plans', function () {
@@ -181,5 +178,13 @@ Route::group('/webhook', function () {
     Route::any(
         'youtube',
         ['as' => 'youtube.store', 'uses' => \App\Http\Controllers\API\V1\WebhookController::class . '@youtube']
+    );
+
+    Route::post(
+        '/paddle',
+        [
+            'as' => 'paddle',
+            'uses' => \App\Http\Controllers\API\V1\Webhook\PaddleController::class . '@store',
+        ]
     );
 }, ['as' => 'webhook']);

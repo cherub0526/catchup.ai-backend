@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Hyperf\Database\Model\Builder;
-use Hypervel\Database\Eloquent\Concerns\HasUuids;
-use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Database\Eloquent\SoftDeletes;
+use Hypervel\Database\Eloquent\Relations\HasOne;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
 
 class Price extends Model
 {
-    use HasUuids;
+    use HasUlids;
     use SoftDeletes;
 
     public const UNIT_MONTHLY = 'monthly';

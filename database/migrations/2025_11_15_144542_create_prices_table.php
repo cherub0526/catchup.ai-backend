@@ -12,8 +12,8 @@ return new class extends \App\Utils\BaseMigration {
     public function up(): void
     {
         Schema::create('prices', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('plan_id')->index()->comment('訂閱方案ID');
+            $table->ulid('id')->primary();
+            $table->foreignUlid('plan_id')->index()->comment('訂閱方案ID');
             $table->string('unit')->comment('計費單位，monthly-月付，quarterly-季付，yearly-年付');
             $table->decimal('price', 8, 2)->default(0.00)->comment('價格');
             $this->timestampsWithIndex($table, false, true);

@@ -12,7 +12,7 @@ return new class extends \App\Utils\BaseMigration {
     public function up(): void
     {
         Schema::create('plans', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->ulid('id')->primary();
             $table->string('title')->comment('方案名稱');
             $table->text('description')->nullable()->comment('方案描述');
             $table->unsignedInteger('channel_limit')->default(0)->comment('頻道數量限制，0表示不限制');
