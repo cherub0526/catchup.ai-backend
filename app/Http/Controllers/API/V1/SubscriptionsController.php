@@ -23,11 +23,11 @@ class SubscriptionsController extends AbstractController
 {
     public function index(Request $request): PlanResource
     {
-        // 如果沒有找訂閱的方案，預設就是免費的月訂閱方案
-        if ($subscription = $request->user()->subscriptions()->active()->first()) {
+        if ($subscription = $request->user()->subscriptions()->active()->orderBy('start_date', 'desc')->first()) {
             $plan = $subscription->plan()->first();
         }
 
+        // 如果沒有找訂閱的方案，預設就是免費的月訂閱方案
         if (! isset($plan)) {
             $plan = Plan::query()->whereHas('prices', function ($builder) {
                 $builder->where('unit', Price::UNIT_MONTHLY)->where('price', 0);
