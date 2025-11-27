@@ -17,6 +17,7 @@ class Kernel extends HttpKernel
      */
     protected array $middleware = [
         \Hypervel\Http\Middleware\HandleCors::class,
+        \App\Http\Middleware\SetLocale::class,
         // \Hypervel\Http\Middleware\ValidatePostSize::class,
         // \App\Http\Middleware\TrimStrings::class,
         // \App\Http\Middleware\ConvertEmptyStringsToNull::class
