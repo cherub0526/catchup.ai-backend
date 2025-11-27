@@ -1,6 +1,24 @@
 <?php
 
 return [
+    'controllers' => [
+        'auth' => [
+            'invalid_credentials' => '帐号或密码无效。',
+        ],
+        'media' => [
+            'not_found' => '找不到指定的媒体。',
+        ],
+        'rss' => [
+            'invalid_url' => '无效的 RSS 网址。',
+            'not_found' => '找不到指定的 RSS。',
+        ],
+        'subscription' => [
+            'plan_not_found' => '找不到指定的方案。',
+            'price_not_found' => '找不到指定的价格。',
+            'price_not_in_plan' => '方案中找不到指定的价格。',
+            'not_found' => '找不到指定的订阅。',
+        ],
+    ],
     'auth' => [
         'account' => [
             'required' => '帐号为必填。',

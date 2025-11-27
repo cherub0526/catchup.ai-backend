@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Models\User;
+use Hypervel\Http\Request;
+use App\Validators\AuthValidator;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\AbstractController;
-use App\Models\User;
-use App\Validators\AuthValidator;
-use Hypervel\Http\Request;
 
 class AuthController extends AbstractController
 {
@@ -27,7 +27,7 @@ class AuthController extends AbstractController
         }
 
         if (! $this->guard()->attempt($params)) {
-            throw new InvalidRequestException(['password' => ['Invalid email or password.']]);
+            throw new InvalidRequestException(['password' => [__('validators.controllers.auth.invalid_credentials')]]);
         }
 
         return $this->responseAccessToken(auth()->login($request->user()));

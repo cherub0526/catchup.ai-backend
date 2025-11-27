@@ -53,7 +53,7 @@ class MediaController extends AbstractController
     public function show(Request $request, int $mediaId): MediaResource
     {
         if (! $media = $request->user()->media()->find($mediaId)) {
-            throw new InvalidRequestException(['media' => ['Media not found.']]);
+            throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
         return new MediaResource($media);

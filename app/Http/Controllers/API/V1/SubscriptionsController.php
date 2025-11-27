@@ -60,15 +60,15 @@ class SubscriptionsController extends AbstractController
         }
 
         if (! $plan = Plan::query()->find($params['planId'])) {
-            throw new InvalidRequestException(['planId' => ['plan not found']]);
+            throw new InvalidRequestException(['planId' => [__('validators.controllers.subscription.plan_not_found')]]);
         }
 
         if (! $price = Price::query()->find($params['priceId'])) {
-            throw new InvalidRequestException(['priceId' => ['price not found']]);
+            throw new InvalidRequestException(['priceId' => [__('validators.controllers.subscription.price_not_found')]]);
         }
 
         if (! $plan->prices()->find($price->id)) {
-            throw new InvalidRequestException(['priceId' => ['price not found in plan']]);
+            throw new InvalidRequestException(['priceId' => [__('validators.controllers.subscription.price_not_in_plan')]]);
         }
 
         $subscription = $request->user()->subscriptions()->create([
@@ -106,7 +106,7 @@ class SubscriptionsController extends AbstractController
     public function update(Request $request, string $subscriptionId)
     {
         if (! $subscription = $request->user()->subscriptions()->find($subscriptionId)) {
-            throw new InvalidRequestException(['subscriptionId' => ['subscription not found']]);
+            throw new InvalidRequestException(['subscriptionId' => [__('validators.controllers.subscription.not_found')]]);
         }
 
         $params = $request->all();

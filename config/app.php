@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Psr\Log\LogLevel;
 use Hypervel\Support\Facades\Facade;
 use Hypervel\Support\ServiceProvider;
-use Psr\Log\LogLevel;
 
 return [
     /*
@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Hypervel'),
+    'name' => env('APP_NAME', 'CatchUp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -118,7 +118,7 @@ return [
 
     'locale' => env('APP_LOCALE', 'en'),
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'zh_TW'),
 
     /*
     |--------------------------------------------------------------------------

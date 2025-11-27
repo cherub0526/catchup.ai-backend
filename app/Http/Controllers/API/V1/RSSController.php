@@ -54,7 +54,7 @@ class RSSController extends AbstractController
 
         $xml = @simplexml_load_file($params['url']);
         if ($xml === false) {
-            throw new InvalidRequestException(['url' => ['Invalid RSS URL.']]);
+            throw new InvalidRequestException(['url' => [__('validators.controllers.rss.invalid_url')]]);
         }
 
         $rss = \App\Models\Rss::create([
@@ -77,7 +77,7 @@ class RSSController extends AbstractController
     public function destroy(Request $request, int $rssId): \Psr\Http\Message\ResponseInterface
     {
         if (! $rss = $request->user()->rss()->find($rssId)) {
-            throw new InvalidRequestException(['rss_id' => ['RSS not found.']]);
+            throw new InvalidRequestException(['rss_id' => [__('validators.controllers.rss.not_found')]]);
         }
 
         $rss->users()->detach($request->user()->id);

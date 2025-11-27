@@ -1,6 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 return [
+    'controllers' => [
+        'auth' => [
+            'invalid_credentials' => 'Invalid account or password.',
+        ],
+        'media' => [
+            'not_found' => 'Media not found.',
+        ],
+        'rss' => [
+            'invalid_url' => 'Invalid RSS URL.',
+            'not_found' => 'RSS not found.',
+        ],
+        'subscription' => [
+            'plan_not_found' => 'Plan not found.',
+            'price_not_found' => 'Price not found.',
+            'price_not_in_plan' => 'Price not found in plan.',
+            'not_found' => 'Subscription not found.',
+        ],
+    ],
     'auth' => [
         'account' => [
             'required' => 'Account is required.',

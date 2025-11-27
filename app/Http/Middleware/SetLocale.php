@@ -29,12 +29,14 @@ class SetLocale
 
     private function getPreferredLanguage(string $acceptLanguage): ?string
     {
+        // 使用底線來匹配你的語系資料夾命名慣例
         $availableLanguages = ['en', 'zh_TW', 'zh_CN'];
         $languages = explode(',', $acceptLanguage);
 
         foreach ($languages as $language) {
             $parts = explode(';', $language);
-            $locale = trim($parts[0]);
+            // 將 'zh-TW' 轉換為 'zh_TW'
+            $locale = str_replace('-', '_', trim($parts[0]));
 
             if (in_array($locale, $availableLanguages)) {
                 return $locale;
