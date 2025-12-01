@@ -106,19 +106,34 @@ class SyncJob implements ShouldQueue
             $medias->push($media);
         }
 
-        $userIds = $this->rss->users()->get(['id'])->pluck('id')->toArray();
+        $this->rss->users()->chunkById(100, function ($users) use ($medias, $ids) {
+            $betweenDays = [
+                now()->subMonth()->startOfDay(),
+                now()->endOfDay(),
+            ];
+            foreach ($users as $user) {
+                $count = $user->media()->whereBetween('userables.created_at', $betweenDays)->count();
 
-        if (empty($userIds)) {
-            return;
-        }
+                $subscription = $user->subscriptions()->active()->orderBy('id', 'desc')->first();
+                $remainCount = $subscription->plan->video_limit - $count;
 
-        $syncData = [];
-        foreach ($userIds as $userId) {
-            $syncData[$userId] = ['rss_id' => $this->rss->id];
-        }
+                if ($remainCount <= 0) {
+                    continue;
+                }
 
-        foreach ($medias as $media) {
-            $media->users()->syncWithoutDetaching($syncData);
-        }
+                $existsMedias = $user->media()->whereIn('resource_id', $ids)->get(['resource_id']);
+
+                $userMedias = $medias->whereNotIn('resource_id', $existsMedias->pluck('resource_id')->toArray())->take(
+                    $remainCount
+                );
+
+                $syncData = [];
+
+                $userMedias->each(function ($media) use (&$syncData) {
+                    $syncData[$media->id] = ['rss_id' => $this->rss->id];
+                });
+                $user->media()->syncWithoutDetaching($syncData);
+            }
+        });
     }
 }
