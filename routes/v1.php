@@ -6,6 +6,14 @@ use Hypervel\Support\Facades\Route;
 
 Route::group('/auth', function () {
     Route::post(
+        '/forgot-password',
+        [
+            'as' => 'forgot-password',
+            'uses' => \App\Http\Controllers\API\V1\Auth\ForgotPasswordController::class . '@store',
+        ]
+    );
+
+    Route::post(
         '/register',
         ['as' => 'register', 'uses' => \App\Http\Controllers\API\V1\AuthController::class . '@register']
     );

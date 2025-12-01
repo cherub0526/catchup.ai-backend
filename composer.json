@@ -19,7 +19,8 @@
         "hypervel/redis": "^0.3",
         "hypervel/socialite": "^0.3.8",
         "paddlehq/paddle-php-sdk": "^1.14",
-        "php-http/guzzle7-adapter": "^1.1"
+        "php-http/guzzle7-adapter": "^1.1",
+      "ext-simplexml": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24.1",

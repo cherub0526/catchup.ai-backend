@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Rss;
 
 use App\Models\Rss;
+use App\Jobs\Rss\SyncJob;
 use Hypervel\Console\Command;
 
 class Sync extends Command
@@ -32,7 +33,7 @@ class Sync extends Command
                 }
                 $this->info('Syncing RSS: ' . $item->title . ' (' . $item->url . ')');
 
-                $executed[] = $item->url;
+                SyncJob::dispatch($item)->onQueue('rss.sync');
             }
         });
     }

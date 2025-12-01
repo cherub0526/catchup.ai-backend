@@ -63,7 +63,7 @@ class AuthController extends AbstractController
         return $this->responseAccessToken($token);
     }
 
-    public function refresh()
+    public function refresh(): \Psr\Http\Message\ResponseInterface
     {
         $token = $this->guard()->refresh();
 

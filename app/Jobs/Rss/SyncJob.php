@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Jobs\Rss;
 
-use App\Models\Media;
-use App\Models\Rss;
 use Carbon\Carbon;
-use Hypervel\Queue\Contracts\ShouldQueue;
+use App\Models\Rss;
+use App\Models\Media;
 use Hypervel\Queue\Queueable;
+use Hypervel\Queue\Contracts\ShouldQueue;
 
 class SyncJob implements ShouldQueue
 {
