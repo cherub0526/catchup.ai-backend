@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Jobs\Caption;
+namespace App\Jobs\Media;
 
 use Exception;
 use App\Models\Media;
@@ -14,7 +14,7 @@ use LucianoTonet\GroqPHP\GroqException;
 use Hypervel\Queue\Contracts\ShouldQueue;
 use App\Exceptions\InvalidRequestException;
 
-class SyncJob implements ShouldQueue
+class CaptionJob implements ShouldQueue
 {
     use Queueable;
 
@@ -27,11 +27,12 @@ class SyncJob implements ShouldQueue
     {
         $this->media = $media;
 
-        $this->queue = 'caption.sync';
+        $this->queue = 'media.caption';
     }
 
     /**
-     * TODO. 未來要優化為 Groq Batch 的方案
+     * TODO. 未來要優化為 Groq Batch 的方案.
+     *
      * Execute the job.
      * @throws GroqException
      */

@@ -10,7 +10,7 @@ use Hypervel\Queue\Queueable;
 use Hypervel\Queue\Contracts\ShouldQueue;
 use App\Services\RapidApi\YoutubeMediaDownloader;
 
-class InformationJob implements ShouldQueue
+class InfoJob implements ShouldQueue
 {
     use Queueable;
 
@@ -23,7 +23,7 @@ class InformationJob implements ShouldQueue
     {
         $this->media = $media;
 
-        $this->queue = 'media.information';
+        $this->queue = 'media.info';
     }
 
     /**
