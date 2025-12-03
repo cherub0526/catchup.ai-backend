@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1\Media;
 
-use App\Exceptions\InvalidRequestException;
-use App\Services\Prompts\TemplateCompletionManager;
-use App\Services\Prompts\TemplateFactory;
+use Hypervel\Http\Request;
 use App\Utils\OpenAI\Completion;
 use App\Validators\ChatValidator;
-use Hypervel\Http\Request;
+use App\Services\Prompts\TemplateFactory;
+use App\Exceptions\InvalidRequestException;
+use App\Services\Prompts\TemplateCompletionManager;
 
 class ChatController
 {
@@ -36,7 +36,7 @@ class ChatController
         $userMessage = collect($params['messages'])->last()['content'] ?? '';
 
         $template = TemplateFactory::create('assistant', [
-            'user_prompt' => $media->captions()->first()->text ?? '',
+            'user_prompt' => $media->captions()->orderByDesc('primary')->first()->text ?? '',
             'messages' => array_pop($params['messages']),
         ]);
         $openai = new TemplateCompletionManager($completion, $template);

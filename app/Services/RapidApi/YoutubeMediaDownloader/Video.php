@@ -39,7 +39,7 @@ class Video
      * false: Excludes objects.
      * auto: If urlAccess=normal, sets videos=true. If urlAccess=blocked, sets videos=false.
      */
-    protected string $videos = 'auto';
+    protected string $videos = 'false';
 
     /**
      * Whether to get audio objects. Defaults to auto.
@@ -49,7 +49,7 @@ class Video
      * false: Excludes objects.
      * auto: If urlAccess=normal, sets audios=true. If urlAccess=blocked, sets audios=false.
      */
-    protected string $audios = 'auto';
+    protected string $audios = 'true';
 
     /**
      * Whether to get subtitle URLs. Defaults to true.
@@ -67,7 +67,7 @@ class Video
      * false:
      * rapid_do_not_include_in_request_key:
      */
-    protected string $related = 'true';
+    protected string $related = 'false';
 
     public function __construct(YoutubeMediaDownloader $downloader)
     {

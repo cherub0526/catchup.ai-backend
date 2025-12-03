@@ -22,6 +22,8 @@ class SyncJob implements ShouldQueue
     public function __construct(Rss $rss)
     {
         $this->rss = $rss;
+
+        $this->queue = 'rss.sync';
     }
 
     /**

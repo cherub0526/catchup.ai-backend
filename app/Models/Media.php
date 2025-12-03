@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\SoftDeletes;
+use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\BelongsToMany;
 
 class Media extends Model
 {
@@ -14,6 +15,17 @@ class Media extends Model
     public const STATUS_CREATED = 'created';
 
     public const STATUS_PROGRESS = 'progress';
+
+    public const STATUS_TRANSCRIBING = 'transcribing';
+
+    public const STATUS_TRANSCRIBED = 'transcribed';
+    public const STATUS_TRANSCRIBE_FAILED = 'transcribe_failed';
+
+    public const STATUS_SUMMARIZING = 'summarizing';
+
+    public const STATUS_SUMMARIZED = 'summarized';
+
+    public const STATUS_SUMMARIZE_FAILED = 'summarize_failed';
 
     public const STATUS_READY = 'ready';
 
@@ -26,11 +38,17 @@ class Media extends Model
     public const TYPE_SPOTIFY = 'spotify';
 
     public static array $statusMap = [
-        self::STATUS_CREATED => '已建立',
-        self::STATUS_PROGRESS => '處理中',
-        self::STATUS_READY => '完成',
-        self::STATUS_CANCELLED => '取消',
-        self::STATUS_FAILED => '失敗',
+        self::STATUS_CREATED           => '已建立',
+        self::STATUS_PROGRESS          => '處理中',
+        self::STATUS_TRANSCRIBING      => '轉錄中',
+        self::STATUS_TRANSCRIBED       => '轉錄完成',
+        self::STATUS_TRANSCRIBE_FAILED => '轉錄失敗',
+        self::STATUS_SUMMARIZING       => '摘要中',
+        self::STATUS_SUMMARIZED        => '摘要完成',
+        self::STATUS_SUMMARIZE_FAILED  => '摘要失敗',
+        self::STATUS_READY             => '完成',
+        self::STATUS_CANCELLED         => '取消',
+        self::STATUS_FAILED            => '失敗',
     ];
 
     public static array $typeMaps = [
@@ -60,12 +78,12 @@ class Media extends Model
      * The attributes that should be cast to native types.
      */
     protected array $casts = [
-        'duration' => 'integer',
+        'duration'     => 'integer',
         'video_detail' => 'array',
         'audio_detail' => 'array',
     ];
 
-    public function users(): \Hyperf\Database\Model\Relations\BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'userables', 'media_id', 'user_id')->withTimestamps();
     }

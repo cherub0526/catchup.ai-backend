@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1\Media;
 
-use App\Exceptions\InvalidRequestException;
-use App\Http\Resources\CaptionResource;
 use Hypervel\Http\Request;
+use App\Http\Resources\CaptionResource;
+use App\Exceptions\InvalidRequestException;
 
 class CaptionsController
 {
@@ -19,7 +19,7 @@ class CaptionsController
             throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
-        $captions = $media->captions()->get(['id', 'locale']);
+        $captions = $media->captions()->orderByDesc('primary')->get(['id', 'locale']);
 
         return CaptionResource::collection($captions);
     }

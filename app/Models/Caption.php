@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\SoftDeletes;
+use Hyperf\Database\Model\Relations\BelongsTo;
 
 class Caption extends Model
 {
@@ -20,12 +20,23 @@ class Caption extends Model
         self::LOCAL_EN => '英文',
     ];
 
+    public static array $groqMaps = [
+        'English' => self::LOCAL_EN,
+    ];
+
     protected ?string $table = 'captions';
 
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = [];
+    protected array $fillable = [
+        'media_id',
+        'locale',
+        'primary',
+        'text',
+        'segments',
+        'word_segments',
+    ];
 
     /**
      * The attributes that should be cast to native types.
