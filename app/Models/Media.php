@@ -12,13 +12,13 @@ class Media extends Model
 {
     use SoftDeletes;
 
-    public const STATUS_CREATED = 'created';
+    public const string STATUS_CREATED = 'created';
 
-    public const STATUS_PROGRESS = 'progress';
+    public const string STATUS_PROGRESS = 'progress';
 
-    public const STATUS_TRANSCRIBING = 'transcribing';
+    public const string STATUS_TRANSCRIBING = 'transcribing';
 
-    public const STATUS_TRANSCRIBED = 'transcribed';
+    public const string STATUS_TRANSCRIBED = 'transcribed';
     public const STATUS_TRANSCRIBE_FAILED = 'transcribe_failed';
 
     public const STATUS_SUMMARIZING = 'summarizing';
