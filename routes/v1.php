@@ -3,32 +3,51 @@
 declare(strict_types=1);
 
 use Hypervel\Support\Facades\Route;
+use App\Http\Controllers\API\V1\RSSController;
+use App\Http\Controllers\API\V1\AuthController;
+use App\Http\Controllers\API\V1\MediaController;
+use App\Http\Controllers\API\V1\UsersController;
+use App\Http\Controllers\API\V1\Media\ChatController;
+use App\Http\Controllers\API\V1\SubscriptionsController;
+use App\Http\Controllers\API\V1\Media\CaptionsController;
+use App\Http\Controllers\API\V1\Webhook\PaddleController;
+use App\Http\Controllers\API\V1\Media\SummariesController;
+use App\Http\Controllers\API\V1\Auth\ForgotPasswordController;
+use App\Http\Controllers\API\V1\Subscriptions\PlansController;
 
 Route::group('/auth', function () {
     Route::post(
         '/forgot-password',
         [
-            'as' => 'forgot-password',
-            'uses' => \App\Http\Controllers\API\V1\Auth\ForgotPasswordController::class . '@store',
+            'as'   => 'forgot-password.store',
+            'uses' => ForgotPasswordController::class . '@store',
+        ]
+    );
+
+    Route::put(
+        'forgot-password',
+        [
+            'as'   => 'forgot-password.update',
+            'uses' => ForgotPasswordController::class . '@update',
         ]
     );
 
     Route::post(
         '/register',
-        ['as' => 'register', 'uses' => \App\Http\Controllers\API\V1\AuthController::class . '@register']
+        ['as' => 'register', 'uses' => AuthController::class . '@register']
     );
 
-    Route::post('/', ['as' => 'store', 'uses' => \App\Http\Controllers\API\V1\AuthController::class . '@store']);
+    Route::post('/', ['as' => 'store', 'uses' => AuthController::class . '@store']);
 
     Route::post(
         '/refresh',
-        ['as' => 'refresh', 'uses' => \App\Http\Controllers\API\V1\AuthController::class . '@refresh']
+        ['as' => 'refresh', 'uses' => AuthController::class . '@refresh']
     );
     Route::post(
         '/logout',
         [
-            'as' => 'logout',
-            'uses' => \App\Http\Controllers\API\V1\AuthController::class . '@logout',
+            'as'         => 'logout',
+            'uses'       => AuthController::class . '@logout',
             'middleware' => ['auth'],
         ]
     );
@@ -38,15 +57,15 @@ Route::group('/users', function () {
     Route::get(
         '/',
         [
-            'as' => 'index',
-            'uses' => \App\Http\Controllers\API\V1\UsersController::class . '@index',
+            'as'         => 'index',
+            'uses'       => UsersController::class . '@index',
             'middleware' => ['auth'],
         ]
     );
 
     Route::put('/', [
-        'as' => 'update',
-        'uses' => \App\Http\Controllers\API\V1\UsersController::class . '@update',
+        'as'         => 'update',
+        'uses'       => UsersController::class . '@update',
         'middleware' => ['auth'],
     ]);
 }, ['as' => 'users']);
@@ -55,22 +74,22 @@ Route::group('/rss', function () {
     Route::get(
         '/',
         [
-            'as' => 'index',
-            'uses' => \App\Http\Controllers\API\V1\RSSController::class . '@index',
+            'as'         => 'index',
+            'uses'       => RSSController::class . '@index',
             'middleware' => ['auth'],
         ]
     );
     Route::post(
         '/',
         [
-            'as' => 'store',
-            'uses' => \App\Http\Controllers\API\V1\RSSController::class . '@store',
+            'as'         => 'store',
+            'uses'       => RSSController::class . '@store',
             'middleware' => ['auth'],
         ]
     );
     Route::delete('/{rssId:[0-9]+}', [
-        'as' => 'destroy',
-        'uses' => \App\Http\Controllers\API\V1\RSSController::class . '@destroy',
+        'as'         => 'destroy',
+        'uses'       => RSSController::class . '@destroy',
         'middleware' => ['auth'],
     ]);
 }, ['as' => 'rss']);
@@ -79,16 +98,16 @@ Route::group('/media', function () {
     Route::get(
         '/',
         [
-            'as' => 'index',
-            'uses' => \App\Http\Controllers\API\V1\MediaController::class . '@index',
+            'as'         => 'index',
+            'uses'       => MediaController::class . '@index',
             'middleware' => ['auth'],
         ]
     );
     Route::get(
         '/{mediaId:[0-9]+}',
         [
-            'as' => 'show',
-            'uses' => \App\Http\Controllers\API\V1\MediaController::class . '@show',
+            'as'         => 'show',
+            'uses'       => MediaController::class . '@show',
             'middleware' => ['auth'],
         ]
     );
@@ -97,16 +116,16 @@ Route::group('/media', function () {
         Route::get(
             '/',
             [
-                'as' => 'index',
-                'uses' => \App\Http\Controllers\API\V1\Media\SummariesController::class . '@index',
+                'as'         => 'index',
+                'uses'       => SummariesController::class . '@index',
                 'middleware' => ['auth'],
             ]
         );
         Route::get(
             '/{summaryId:[0-9]+}',
             [
-                'as' => 'show',
-                'uses' => \App\Http\Controllers\API\V1\Media\SummariesController::class . '@show',
+                'as'         => 'show',
+                'uses'       => SummariesController::class . '@show',
                 'middleware' => ['auth'],
             ]
         );
@@ -116,16 +135,16 @@ Route::group('/media', function () {
         Route::get(
             '/',
             [
-                'as' => 'index',
-                'uses' => \App\Http\Controllers\API\V1\Media\CaptionsController::class . '@index',
+                'as'         => 'index',
+                'uses'       => CaptionsController::class . '@index',
                 'middleware' => ['auth'],
             ]
         );
         Route::get(
             '/{captionId}',
             [
-                'as' => 'show',
-                'uses' => \App\Http\Controllers\API\V1\Media\CaptionsController::class . '@show',
+                'as'         => 'show',
+                'uses'       => CaptionsController::class . '@show',
                 'middleware' => ['auth'],
             ]
         );
@@ -133,8 +152,8 @@ Route::group('/media', function () {
 
     Route::group('/{mediaId:[0-9]+}/chat', function () {
         Route::post('/', [
-            'as' => 'store',
-            'uses' => \App\Http\Controllers\API\V1\Media\ChatController::class . '@store',
+            'as'         => 'store',
+            'uses'       => ChatController::class . '@store',
             'middleware' => ['auth'],
         ]);
     }, ['as' => 'chat']);
@@ -144,30 +163,30 @@ Route::group('/subscriptions', function () {
     Route::get(
         '/',
         [
-            'as' => 'index',
-            'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@index',
+            'as'         => 'index',
+            'uses'       => SubscriptionsController::class . '@index',
             'middleware' => ['auth'],
         ]
     );
     Route::post('/', [
-        'as' => 'store',
-        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@store',
+        'as'         => 'store',
+        'uses'       => SubscriptionsController::class . '@store',
         'middleware' => ['auth'],
     ]);
     Route::put('/{subscriptionId}', [
-        'as' => 'update',
-        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@update',
+        'as'         => 'update',
+        'uses'       => SubscriptionsController::class . '@update',
         'middleware' => ['auth'],
     ]);
     Route::delete('/{subscriptionId}', [
-        'as' => 'destroy',
-        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@destroy',
+        'as'         => 'destroy',
+        'uses'       => SubscriptionsController::class . '@destroy',
         'middleware' => ['auth'],
     ]);
 
     Route::get('/usage', [
-        'as' => 'usage',
-        'uses' => \App\Http\Controllers\API\V1\SubscriptionsController::class . '@usage',
+        'as'         => 'usage',
+        'uses'       => SubscriptionsController::class . '@usage',
         'middleware' => ['auth'],
     ]);
 }, ['as' => 'subscriptions']);
@@ -176,23 +195,18 @@ Route::group('/plans', function () {
     Route::get(
         '/',
         [
-            'as' => 'index',
-            'uses' => \App\Http\Controllers\API\V1\Subscriptions\PlansController::class . '@index',
+            'as'   => 'index',
+            'uses' => PlansController::class . '@index',
         ]
     );
 }, ['as' => 'plans']);
 
 Route::group('/webhook', function () {
-    Route::any(
-        'youtube',
-        ['as' => 'youtube.store', 'uses' => \App\Http\Controllers\API\V1\WebhookController::class . '@youtube']
-    );
-
     Route::post(
         '/paddle',
         [
-            'as' => 'paddle',
-            'uses' => \App\Http\Controllers\API\V1\Webhook\PaddleController::class . '@store',
+            'as'   => 'paddle',
+            'uses' => PaddleController::class . '@store',
         ]
     );
 }, ['as' => 'webhook']);

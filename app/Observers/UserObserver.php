@@ -26,8 +26,8 @@ class UserObserver
         );
 
         $user->paddle()->create([
-            'foreign_type' => User::class,
-            'paddle_id' => $response->id,
+            'foreign_type'  => User::class,
+            'paddle_id'     => $response->id,
             'paddle_detail' => $response,
         ]);
     }
@@ -39,13 +39,15 @@ class UserObserver
     {
         $paddle = new PaddleClient();
 
-        $paddle->customers()->update(
-            $user->paddle->paddle_id,
-            new UpdateCustomer(
-                email: $user->email,
-                name: $user->name
-            )
-        );
+        if ($user->paddle()->exists()) {
+            $paddle->customers()->update(
+                $user->paddle->paddle_id,
+                new UpdateCustomer(
+                    email: $user->email,
+                    name: $user->name
+                )
+            );
+        }
     }
 
     /**
