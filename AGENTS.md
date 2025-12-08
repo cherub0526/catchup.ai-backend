@@ -1,43 +1,40 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code、Gemini when working with code in this repository.
 
 ## Project Overview
 
-This is a video assistant API built with **Hypervel**, a Laravel-style PHP framework with native coroutine support for ultra-high performance. The application provides AI-powered video analysis, summaries, captions, and chat capabilities for YouTube content, with Paddle subscription management.
+This is a video assistant API built with **Hypervel** (v0.3), a Laravel-style PHP framework with native coroutine
+support built on Swoole. The application provides AI-powered video analysis, summaries, captions, and chat capabilities
+for YouTube content, with Paddle subscription management.
 
 **Core functionality:**
+
 - RSS feed subscription and synchronization for YouTube channels
-- Video caption extraction and AI-powered analysis
+- Video caption extraction and AI-powered transcription (via Groq)
 - AI-generated video summaries using OpenAI
 - Interactive chat with video content
 - Paddle subscription management with webhook handling
-- OAuth authentication (local, Facebook, Google)
-
-## Framework-Specific Notes
-
-Hypervel is built on top of Hyperf and provides Laravel-like APIs with coroutine support. Key differences from standard Laravel:
-
-- Uses Swoole for coroutine-based concurrency
-- HTTP responses use PSR-7 interfaces: `\Psr\Http\Message\ResponseInterface`
-- Most Laravel patterns work identically (Eloquent, routing, validation, etc.)
-- Queue system supports coroutine drivers for non-blocking I/O operations
-- Framework components are in `Hypervel\*` namespaces (vs Laravel's `Illuminate\*`)
+- OAuth authentication (local, Facebook, Google) with JWT tokens
 
 ## Development Commands
 
 ### Server Management
+
 ```bash
-# Start the development server (blocking, keeps running)
+# Start the development server (blocking, keeps running until stopped)
 composer start
 # or
 php artisan start
 
 # Start with file watching (auto-reload on code changes)
 php artisan server:watch
+
+# Server runs on HTTP_SERVER_HOST:HTTP_SERVER_PORT (default: 0.0.0.0:9501)
 ```
 
 ### Database
+
 ```bash
 # Run migrations
 php artisan migrate
@@ -53,20 +50,21 @@ php artisan db:seed
 ```
 
 ### Queue Workers
+
 ```bash
-# Start queue worker
+# Start queue worker (processes default queue)
 php artisan queue:work
 
 # Process specific queue
-php artisan queue:work --queue=default
+php artisan queue:work --queue=media.caption
+php artisan queue:work --queue=media.info
 ```
 
 ### Testing
+
 ```bash
 # Run all tests
 composer test
-# or
-php artisan test
 # or
 vendor/bin/phpunit
 
@@ -78,6 +76,7 @@ vendor/bin/phpunit --filter testExample
 ```
 
 ### Code Quality
+
 ```bash
 # Fix code style for modified files (vs origin/main)
 composer cs-diff
@@ -85,164 +84,296 @@ composer cs-diff
 # Fix code style for specific file
 composer cs-fix app/Models/User.php
 
-# Run static analysis
+# Run static analysis (PHPStan)
 composer analyse
 ```
 
 ### RSS Synchronization
+
 ```bash
-# Sync all RSS feeds
+# Sync all RSS feeds (fetches new videos from subscribed channels)
 php artisan rss:sync
 
 # Sync specific RSS feed by ID
 php artisan rss:sync --id=1
 ```
 
+## Framework-Specific Notes
+
+Hypervel is Laravel-compatible but uses Swoole coroutines for high concurrency. Key differences from Laravel:
+
+- **HTTP Responses**: Use PSR-7 interfaces (`\Psr\Http\Message\ResponseInterface`) instead of Laravel responses
+- **Coroutine Support**: Non-blocking I/O operations via Swoole coroutines
+- **Namespace**: Framework components use `Hypervel\*` instead of `Illuminate\*`
+- **Server**: Long-running process (not PHP-FPM), restart required for code changes unless using `server:watch`
+- **Most patterns identical**: Eloquent, routing, validation, facades, service providers all work like Laravel
+
 ## Architecture Overview
 
-### Application Structure
+### Media Processing Pipeline
 
-**Models & Database:**
-- `User` - Users with social auth support (local/Facebook/Google), linked to Paddle customers
-- `Media` - YouTube videos with status tracking (created → progress → ready)
-- `Caption` - Video captions/transcripts
-- `Summary` - AI-generated video summaries
-- `Rss` - YouTube RSS feed subscriptions
-- `RssSyncHistory` - RSS sync operation tracking
-- `Oauth` - OAuth authentication tokens
-- `Plan`, `Price`, `Paddle` - Paddle subscription management models
-- `Userable` pivot table - Links users to both RSS feeds and media (polymorphic-style many-to-many)
+The system processes YouTube videos through multiple stages with separate job queues:
 
-**Controllers (API V1):**
-- `AuthController` - JWT authentication (login, register, refresh, logout)
-- `OauthController` - Social OAuth (Facebook, Google)
-- `UsersController` - User profile management
-- `MediaController` - Media listing and retrieval
-- `Media/CaptionsController` - Caption management for videos
-- `Media/SummariesController` - Summary management for videos
-- `Media/ChatController` - AI chat interface for video content
-- `RSSController` - RSS feed subscription management
-- `SubscriptionsController` - Subscription usage tracking and management
-- `Subscriptions/PlansController` - Available subscription plans
-- `Subscriptions/WebhookController` - Paddle webhook handling
-- `Webhook/YoutubeController` - YouTube webhook notifications
+1. **Creation** (`STATUS_CREATED`) - Media record created from RSS feed
+2. **Info Fetching** (`STATUS_PROGRESS`) - `InfoJob` fetches video details via RapidAPI
+3. **Transcription** (`STATUS_TRANSCRIBING` → `STATUS_TRANSCRIBED`) - `CaptionJob` generates captions:
+    - Uses existing subtitles if available
+    - Falls back to Groq API for audio transcription
+    - Supports multiple locales
+4. **Summarization** (`STATUS_SUMMARIZING` → `STATUS_SUMMARIZED`) - `SummaryJob` generates AI summaries
+5. **Ready** (`STATUS_READY`) - Video ready for chat and consumption
 
-**Services:**
-- `PaddleClient` - Wrapper for Paddle SDK (customers, products, prices, subscriptions, transactions)
-- `RssFeedAsapService` - RSS feed parsing and processing
-- `Prompts/*` - Template system for OpenAI prompts:
-  - `TemplateCompletionManager` - Manages OpenAI API calls with templates
-  - `AnalysisTemplate`, `SummaryTemplate`, `TranslationTemplate`, `CaptionTemplate`, `AssistantTemplate` - Specific prompt templates
-  - Uses Template pattern with `TemplateInterface` and `BaseTemplate`
+Jobs use specific queues:
 
-**Jobs:**
-- `Rss/SyncJob` - Processes RSS feeds, creates Media records, syncs with users
+- `media.info` - InfoJob
+- `media.caption` - CaptionJob
+- `media.summary` - SummaryJob (not yet implemented)
 
-**Validators:**
-- Custom validator classes (e.g., `AuthValidator`, `MediaValidator`) using `BaseValidator`
-- Validation methods: `setIndexRules()`, `setStoreRules()`, etc.
-- Use `InvalidRequestException` for validation failures
+### Core Models & Relationships
 
-**Resources:**
-- API Resources for JSON responses: `UserResource`, `MediaResource`, `CaptionResource`, `SummaryResource`, `PlanResource`, `PriceResource`
+**User** - Authenticated users
 
-**Observers:**
-- `PlanObserver`, `PriceObserver` - Sync with Paddle when plans/prices change
-- `UserObserver` - Handle user lifecycle events
+- `hasMany`: Media (polymorphic via `userables`), Oauth
+- `belongsTo`: Paddle (customer relationship)
 
-### Key Patterns
+**Media** - YouTube videos (status: created → progress → transcribing → transcribed → summarizing → summarized → ready)
 
-**Authentication:**
-- JWT-based authentication with `auth('jwt')` guard
-- Token format: Bearer token with configurable TTL (config `jwt.ttl` in minutes)
-- OAuth social login support (Facebook, Google) via Hypervel Socialite
+- `hasMany`: Caption, Summary
+- `belongsToMany`: User (polymorphic via `userables`)
 
-**Validation:**
-- Custom Validator classes extending `BaseValidator`
-- Throw `InvalidRequestException` with error array on validation failure
-- Rule methods like `setStoreRules()`, `setIndexRules()` define validation per action
+**Rss** - RSS feed subscriptions
 
-**API Responses:**
-- Use `response()->json()` for JSON responses
-- Use API Resources for structured output
-- Controllers extend `AbstractController` with helper methods
+- `belongsToMany`: User (polymorphic via `userables`)
+- `hasMany`: RssSyncHistory
 
-**Queue System:**
-- Default driver: database (configurable via `QUEUE_CONNECTION`)
-- Jobs implement `ShouldQueue` interface and use `Queueable` trait
-- Supports coroutine-based queue drivers for concurrent processing
-- Dispatch with: `YourJob::dispatch($params)`
+**Caption** - Video transcripts/captions (by locale)
 
-**AI Integration:**
-- OpenAI completion via `App\Utils\OpenAI\Completion`
-- Template-based prompt system for consistent AI interactions
-- Templates define system messages and user message structure
-- `TemplateCompletionManager` handles API calls and response extraction
+- `belongsTo`: Media
 
-**Paddle Integration:**
-- Webhook verification using `Paddle\SDK\Notifications\Verifier` and `Secret`
-- Webhook secret: `PADDLE_WEBHOOK_SECRET_KEY` environment variable
-- Sandbox mode: controlled by `PADDLE_SANDBOX` environment variable
-- Store Paddle entities with `foreign_type` and `foreign_id` polymorphic pattern
+**Summary** - AI-generated video summaries
 
-### RSS Feed Processing
+- `belongsTo`: Media
 
-1. User subscribes to YouTube RSS feed
-2. `RssSyncJob` is dispatched (manually via command or scheduled)
-3. Job parses RSS XML, extracts video metadata
-4. Creates `Media` records for new videos not in database
-5. Links media to all users subscribed to that RSS feed via `userables` pivot table
-6. Tracks sync operations in `RssSyncHistory`
+**Paddle, Plan, Price, Subscription, Transaction** - Paddle integration models
 
-### Routing
+### Key Services
 
-- API routes defined in `routes/v1.php` (versioned)
-- Web routes in `routes/web.php` (minimal, mostly for testing)
-- Route groups use array syntax: `Route::group('/path', function() { ... }, ['as' => 'name'])`
-- Middleware applied via route config: `['middleware' => ['auth']]`
+**PaddleClient** (`App\Services\PaddleClient`)
+
+- Wrapper for Paddle PHP SDK
+- Methods: `customers()`, `products()`, `prices()`, `subscriptions()`, `transactions()`
+- Respects sandbox mode via `PADDLE_SANDBOX` env var
+
+**RssFeedAsapService** (`App\Services\RssFeedAsapService`)
+
+- Parses YouTube RSS feeds
+- Extracts video metadata
+
+**Prompt Templates** (`App\Services\Prompts/*`)
+
+- Template system for AI interactions with OpenAI
+- `TemplateCompletionManager` - Orchestrates API calls
+- Templates: `AnalysisTemplate`, `SummaryTemplate`, `TranslationTemplate`, `CaptionTemplate`, `AssistantTemplate`
+- All extend `BaseTemplate` implementing `TemplateInterface`
+
+**OpenAI Integration** (`App\Utils\OpenAI\Completion`)
+
+- Direct OpenAI API client for completions
+
+**YoutubeMediaDownloader** (`App\Services\RapidApi\YoutubeMediaDownloader`)
+
+- RapidAPI client for fetching YouTube video details and audio info
+
+### Localization & Internationalization
+
+**Language Files** (`lang/`)
+
+- **Supported locales**: `en` (English), `zh_CN` (Simplified Chinese), `zh_TW` (Traditional Chinese)
+- **Translation files per locale**:
+    - `validation.php` - Framework validation messages (Laravel/Hypervel standard)
+    - `validators.php` - Custom validator messages organized by module:
+        - `controllers.*` - Controller-level error messages (auth, media, rss, subscription, webhook)
+        - `auth.*` - Authentication field validation messages
+        - `chat.*` - Chat message validation
+        - `media.*` - Media field validation
+        - `oauth.*` - OAuth provider validation
+        - `rss.*` - RSS feed validation
+        - `subscription.*` - Subscription validation
+        - `user.*` - User profile validation
+    - `mails.php` - Email template translations (e.g., password reset emails)
+
+**Usage in code**:
+
+```php
+// Get translated validation message
+__('validators.auth.invalid_credentials')
+
+// Get translated email content
+__('mails.reset_password.subject')
+```
+
+### API Routes (v1)
+
+All routes in `routes/v1.php`:
+
+**Auth** (JWT-based)
+
+- `POST /auth` - Login
+- `POST /auth/register` - Register
+- `POST /auth/refresh` - Refresh token
+- `POST /auth/logout` - Logout (auth required)
+- `POST /auth/forgot-password` - Request password reset
+- `PUT /auth/forgot-password` - Reset password with token
+
+**Users** (auth required)
+
+- `GET /users` - Get current user profile
+- `PUT /users` - Update current user
+
+**RSS** (auth required)
+
+- `GET /rss` - List user's RSS subscriptions
+- `POST /rss` - Subscribe to RSS feed
+- `DELETE /rss/{id}` - Unsubscribe
+
+**Media** (auth required)
+
+- `GET /media` - List user's videos
+- `GET /media/{id}` - Get video details
+- `GET /media/{id}/captions` - List captions
+- `GET /media/{id}/captions/{captionId}` - Get specific caption
+- `GET /media/{id}/summaries` - List summaries
+- `GET /media/{id}/summaries/{id}` - Get specific summary
+- `POST /media/{id}/chat` - Chat with video content
+
+**Subscriptions** (auth required)
+
+- `GET /subscriptions` - List user subscriptions
+- `POST /subscriptions` - Create subscription
+- `PUT /subscriptions/{id}` - Update subscription
+- `DELETE /subscriptions/{id}` - Cancel subscription
+- `GET /subscriptions/usage` - Get usage stats
+
+**Plans** (public)
+
+- `GET /plans` - List available subscription plans
+
+**Webhooks** (public)
+
+- `POST /webhook/paddle` - Paddle webhook handler
+
+### Validation Pattern
+
+Custom validators extending `App\Validators\BaseValidator`:
+
+```php
+class MediaValidator extends BaseValidator
+{
+    public function setIndexRules(): void { /* ... */ }
+    public function setStoreRules(): void { /* ... */ }
+    public function setUpdateRules(): void { /* ... */ }
+}
+```
+
+Throw `InvalidRequestException` with error array on validation failure.
+
+### Authentication
+
+- JWT-based with `auth('jwt')` guard
+- Token TTL: configurable via `config('jwt.ttl')` in minutes
+- Social OAuth via Hypervel Socialite (Facebook, Google)
+- Middleware: `'middleware' => ['auth']` on protected routes
+
+### Queue System
+
+- Default driver: database (`QUEUE_CONNECTION=database`)
+- Jobs implement `ShouldQueue` and use `Queueable` trait
+- Dispatch: `JobClass::dispatch($params)`
+- Supports coroutine-based processing for concurrent I/O
+
+### Paddle Integration
+
+- SDK initialized with API key and sandbox mode from env
+- Webhook verification using `Paddle\SDK\Notifications\Verifier` with `PADDLE_WEBHOOK_SECRET_KEY`
+- Models sync with Paddle via Observers (`PlanObserver`, `PriceObserver`)
+- Store Paddle entities using polymorphic `foreign_type` and `foreign_id` pattern
 
 ## Environment Configuration
 
-Required environment variables:
+Required environment variables (see `.env.example`):
+
+**Core**
+
 - `APP_KEY` - Application encryption key
-- `DB_*` - Database connection settings
+- `APP_ENV` - Environment (local, production)
+- `APP_DEBUG` - Debug mode boolean
+
+**Database**
+
+- `DB_CONNECTION` - sqlite or mysql
+- `DB_*` - Connection settings for MySQL
+
+**Queue & Cache**
+
+- `QUEUE_CONNECTION` - database (default)
+- `CACHE_DRIVER` - redis (default)
+- `REDIS_*` - Redis connection settings
+
+**Authentication**
+
 - `JWT_SECRET` - JWT signing secret
+- `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`, `FACEBOOK_REDIRECT_URL`
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URL`
+
+**External APIs**
+
+- `OPENAI_API_KEY` - OpenAI API key
+- `GROQ_API_KEY` - Groq API key (for transcription)
+- `RAPID_API_KEY` - RapidAPI key (for YouTube data)
 - `PADDLE_API_KEY` - Paddle API key
-- `PADDLE_WEBHOOK_SECRET_KEY` - Paddle webhook verification secret
+- `PADDLE_CLIENT_TOKEN` - Paddle client token
+- `PADDLE_WEBHOOK_SECRET_KEY` - Webhook verification secret
 - `PADDLE_SANDBOX` - Boolean for sandbox mode
-- `OPENAI_API_KEY` - OpenAI API key (used in `App\Utils\OpenAI\Completion`)
-- OAuth credentials: `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
 
-## Testing Notes
+## Code Conventions
 
-- Test environment uses SQLite (`DB_CONNECTION=sqlite_testing`)
-- Tests located in `tests/Feature/` and `tests/Unit/`
-- Bootstrap file: `tests/bootstrap.php`
+**All PHP files must**:
+
+- Use `declare(strict_types=1);` at top
+- Follow PHP CS Fixer rules (`.php-cs-fixer.php`)
+- Pass PHPStan analysis (level defined in `phpstan.neon`)
+
+**Migrations**:
+
+- Extend `App\Utils\BaseMigration` (not Illuminate's Migration class)
+
+**Models**:
+
+- Extend `App\Models\Model` (base model with common config)
+- User model extends `Hypervel\Foundation\Auth\User`
+- Define `$fillable`, `$casts`, relationships explicitly
+
+**Controllers**:
+
+- Extend `App\Http\Controllers\API\AbstractController`
+- Type hint: `Hypervel\Http\Request`
+- Return type: `\Psr\Http\Message\ResponseInterface`
+- Use `response()->json()` for JSON responses
+
+**Responses**:
+
+- Use API Resources for structured output (e.g., `UserResource`, `MediaResource`)
+- Follow PSR-7 interface pattern
+
+**Error Handling**:
+
+- Throw `App\Exceptions\InvalidRequestException` for validation errors
+- Custom exception handling in `App\Exceptions\Handler`
+
+## Testing
+
+- Test environment: SQLite (`DB_CONNECTION=sqlite_testing`)
+- Tests in `tests/Feature/` and `tests/Unit/`
+- Use `RefreshDatabase` trait for database tests
 - Helper functions in `tests/helpers.php`
-- Use `RefreshDatabase` trait for database tests (see `tests/Feature/RefreshDatabaseTest.php`)
-
-## Important Conventions
-
-**Migrations:**
-- Extend `App\Utils\BaseMigration` (not `Illuminate\Database\Migrations\Migration`)
-- Use standard Laravel migration methods
-
-**Models:**
-- Extend `App\Models\Model` (base model with common configuration)
-- User model extends `Hypervel\Foundation\Auth\User` for authentication
-- Use `SoftDeletes` trait where applicable
-- Define fillable fields, casts, and relationships explicitly
-
-**Controllers:**
-- Extend `AbstractController` for common response methods
-- Use type hints for Request: `Hypervel\Http\Request`
-- Return types: `\Psr\Http\Message\ResponseInterface` for PSR-7 responses
-
-**Error Handling:**
-- Throw `InvalidRequestException` for validation errors with array of messages
-- Exception handler in `App\Exceptions\Handler`
-
-**Code Style:**
-- Uses `declare(strict_types=1);` at top of all PHP files
-- PHP CS Fixer configuration in `.php-cs-fixer.php`
-- PHPStan configuration in `phpstan.neon` with 300M memory limit
+- Bootstrap: `tests/bootstrap.php`
