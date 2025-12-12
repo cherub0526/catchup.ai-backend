@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\API\V1;
 
+use Tests\TestCase;
 use App\Validators\AuthValidator;
 use Hypervel\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 /**
  * @internal
@@ -51,14 +51,30 @@ class AuthControllerTest extends TestCase
 
     public function testRegister()
     {
+        $messages = (new AuthValidator([]))->getMessages();
+
         $uri = route('api.v1.auth.register');
+
         $this->json('POST', $uri)->assertStatus(422)->assertJsonStructure([
             'messages' => [
                 'account',
                 'email',
                 'password',
             ],
-        ]);
+        ])->assertJsonPath('messages.account', [$messages['account.required']])
+            ->assertJsonPath('messages.email', [$messages['email.required']])
+            ->assertJsonPath('messages.password', [$messages['password.required']]);
+
+        $params = [
+            'account'  => fake()->name(),
+            'email'    => fake()->email(),
+            'password' => 'password',
+        ];
+        $this->json('POST', $uri, $params)->assertStatus(422)
+            ->assertJsonPath('messages.password', [$messages['password.confirmed']]);
+
+        $params['password_confirmation'] = 'password';
+        $this->json('POST', $uri, $params)->assertStatus(201);
     }
 
     public function testLogout()

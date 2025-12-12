@@ -15,6 +15,10 @@ class SummaryResource extends JsonResource
      */
     public function toArray(): array
     {
-        return parent::toArray();
+        return [
+            'locale' => strval($this->resource->locale),
+            'status' => strval($this->resource->status),
+            'text'   => $this->resource->text,
+        ];
     }
 }

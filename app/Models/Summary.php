@@ -22,14 +22,14 @@ class Summary extends Model
 
     public static array $localeMaps = [
         self::LOCALE_ZH_TW => '繁體中文',
-        self::LOCALE_EN => '英文',
+        self::LOCALE_EN    => '英文',
     ];
 
     public static array $statusMaps = [
-        self::STATUS_CREATED => '已建立',
+        self::STATUS_CREATED    => '已建立',
         self::STATUS_PROCESSING => '處理中',
-        self::STATUS_COMPLETED => '完成',
-        self::STATUS_FAILED => '失敗',
+        self::STATUS_COMPLETED  => '完成',
+        self::STATUS_FAILED     => '失敗',
     ];
 
     protected ?string $table = 'summaries';
@@ -49,8 +49,8 @@ class Summary extends Model
      */
     protected array $casts = [
         'media_id' => 'integer',
-        'locale' => 'string',
-        'text' => 'array',
+        'locale'   => 'string',
+        'text'     => 'array',
     ];
 
     public function media(): BelongsTo

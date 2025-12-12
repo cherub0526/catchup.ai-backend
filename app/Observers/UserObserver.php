@@ -6,7 +6,6 @@ namespace App\Observers;
 
 use App\Models\User;
 use App\Services\PaddleClient;
-use Paddle\SDK\Resources\Customers\Operations\CreateCustomer;
 use Paddle\SDK\Resources\Customers\Operations\UpdateCustomer;
 
 class UserObserver
@@ -16,20 +15,20 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        $paddle = new PaddleClient();
-
-        $response = $paddle->customers()->create(
-            new CreateCustomer(
-                email: $user->email,
-                name: $user->name
-            )
-        );
-
-        $user->paddle()->create([
-            'foreign_type'  => User::class,
-            'paddle_id'     => $response->id,
-            'paddle_detail' => $response,
-        ]);
+        //        $paddle = new PaddleClient();
+        //
+        //        $response = $paddle->customers()->create(
+        //            new CreateCustomer(
+        //                email: $user->email,
+        //                name: $user->name
+        //            )
+        //        );
+        //
+        //        $user->paddle()->create([
+        //            'foreign_type'  => User::class,
+        //            'paddle_id'     => $response->id,
+        //            'paddle_detail' => $response,
+        //        ]);
     }
 
     /**

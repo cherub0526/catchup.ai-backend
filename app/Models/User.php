@@ -6,8 +6,9 @@ namespace App\Models;
 
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\SoftDeletes;
-use Hypervel\Database\Eloquent\Factories\HasFactory;
+use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Database\Eloquent\Relations\HasMany;
+use Hypervel\Database\Eloquent\Factories\HasFactory;
 use Hypervel\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -15,11 +16,11 @@ class User extends Authenticatable
     use HasFactory;
     use SoftDeletes;
 
-    public const SOCIAL_TYPE_LOCAL = 'local';
+    public const string SOCIAL_TYPE_LOCAL = 'local';
 
-    public const SOCIAL_TYPE_FACEBOOK = 'facebook';
+    public const string SOCIAL_TYPE_FACEBOOK = 'facebook';
 
-    public const SOCIAL_TYPE_GOOGLE = 'google';
+    public const string SOCIAL_TYPE_GOOGLE = 'google';
 
     protected array $with = ['paddle'];
 
@@ -63,7 +64,7 @@ class User extends Authenticatable
         )->withTimestamps();
     }
 
-    public function paddle(): Builder|\Hypervel\Database\Eloquent\Relations\HasOne
+    public function paddle(): Builder|HasOne
     {
         return $this->hasOne(Paddle::class, 'foreign_id', 'id')->where('foreign_type', self::class);
     }

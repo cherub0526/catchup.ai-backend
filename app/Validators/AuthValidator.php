@@ -11,27 +11,27 @@ class AuthValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'account.required' => __('validators.auth.account.required'),
-            'account.string' => __('validators.auth.account.string'),
-            'account.min' => __('validators.auth.account.min'),
-            'account.max' => __('validators.auth.account.max'),
-            'account.unique' => __('validators.auth.account.unique'),
-            'email.required' => __('validators.auth.email.required'),
-            'email.email' => __('validators.auth.email.email'),
-            'email.max' => __('validators.auth.email.max'),
-            'password.required' => __('validators.auth.password.required'),
-            'password.string' => __('validators.auth.password.string'),
-            'password.min' => __('validators.auth.password.min'),
-            'password.confirmed' => __('validators.auth.password.confirmed'),
+            'account.required'               => __('validators.auth.account.required'),
+            'account.string'                 => __('validators.auth.account.string'),
+            'account.min'                    => __('validators.auth.account.min'),
+            'account.max'                    => __('validators.auth.account.max'),
+            'account.unique'                 => __('validators.auth.account.unique'),
+            'email.required'                 => __('validators.auth.email.required'),
+            'email.email'                    => __('validators.auth.email.email'),
+            'email.max'                      => __('validators.auth.email.max'),
+            'password.required'              => __('validators.auth.password.required'),
+            'password.string'                => __('validators.auth.password.string'),
+            'password.min'                   => __('validators.auth.password.min'),
+            'password.confirmed'             => __('validators.auth.password.confirmed'),
             'password_confirmation.required' => __('validators.auth.password_confirmation.required'),
-            'password_confirmation.string' => __('validators.auth.password_confirmation.string'),
+            'password_confirmation.string'   => __('validators.auth.password_confirmation.string'),
         ];
     }
 
     public function setStoreRules(): self
     {
         $this->rules = [
-            'account' => 'required|min:6|max:255',
+            'account'  => 'required|min:6|max:255',
             'password' => 'required|string|min:8',
         ];
 
@@ -41,8 +41,8 @@ class AuthValidator extends BaseValidator
     public function setRegisterRules(): self
     {
         $this->rules = [
-            'account' => 'required|string|min:6|max:255|unique:users,account',
-            'email' => 'required|email|max:255',
+            'account'  => 'required|string|min:6|max:255|unique:users,account',
+            'email'    => 'required|email|max:255',
             'password' => 'required|string|min:8|confirmed',
         ];
 

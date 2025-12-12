@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Utils\OpenAI;
 
-use Hypervel\Support\Facades\Http;
 use RuntimeException;
+use Hypervel\Support\Facades\Http;
 
 class Completion
 {
-    private object $client;
-
     private string $apiKey;
 
     private string $baseUri;
 
-    public function __construct(string $apiKey, $client = null, string $baseUri = 'https://api.openai.com/v1')
-    {
+    public function __construct(
+        string $apiKey,
+        string $baseUri = 'https://api.openai.com/v1'
+    ) {
         $this->apiKey = $apiKey;
         $this->baseUri = rtrim($baseUri, '/');
     }
@@ -31,7 +31,7 @@ class Completion
     public function completions(string $model, array $messages, array $options = []): array
     {
         $payload = array_merge([
-            'model' => $model,
+            'model'    => $model,
             'messages' => $messages,
             // sensible default; can be overridden via $options
             'max_tokens' => 2000,

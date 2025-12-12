@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1\Media;
 
-use App\Exceptions\InvalidRequestException;
-use App\Http\Resources\SummaryResource;
 use Hypervel\Http\Request;
+use App\Http\Resources\SummaryResource;
+use App\Exceptions\InvalidRequestException;
 
 class SummariesController
 {
@@ -15,7 +15,7 @@ class SummariesController
      */
     public function index(Request $request, int $mediaId)
     {
-        if (! $media = $request->user()->media()->find($mediaId)) {
+        if (!$media = $request->user()->media()->find($mediaId)) {
             throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
