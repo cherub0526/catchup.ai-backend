@@ -10,6 +10,7 @@ services:
     privileged: true
     user: root
     working_dir: /var/www
+    restart: "always"
     deploy:
       replicas: 1
       update_config:

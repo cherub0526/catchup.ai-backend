@@ -50,7 +50,7 @@ class AuthController extends AbstractController
 
         $user = User::query()
             ->where('account', $params['account'])
-            ->where('social', User::SOCIAL_TYPE_LOCAL)
+            ->where('social_type', User::SOCIAL_TYPE_LOCAL)
             ->first();
 
         if (!$user) {
