@@ -68,17 +68,15 @@ class AuthController extends AbstractController
         return $this->responseAccessToken($token, 201);
     }
 
-    public function refresh(): ResponseInterface
+    public function refresh(Request $request): ResponseInterface
     {
         $token = $this->guard()->refresh();
 
         return $this->responseAccessToken($token);
     }
 
-    public function logout(): ResponseInterface
+    public function logout(Request $request): ResponseInterface
     {
-        $this->guard()->logout();
-
         return response()->make(self::RESPONSE_OK, 200);
     }
 

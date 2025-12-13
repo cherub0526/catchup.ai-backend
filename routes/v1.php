@@ -41,7 +41,7 @@ Route::group('/auth', function () {
 
     Route::post(
         '/refresh',
-        ['as' => 'refresh', 'uses' => AuthController::class . '@refresh']
+        ['as' => 'refresh', 'uses' => AuthController::class . '@refresh', 'middleware' => ['auth']]
     );
     Route::post(
         '/logout',
