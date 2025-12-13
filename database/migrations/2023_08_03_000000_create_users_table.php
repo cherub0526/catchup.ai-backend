@@ -13,7 +13,7 @@ return new class extends BaseMigration {
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->ulid()->primary();
+            $table->ulid('id')->primary();
             $table->string('account')->index()->nullable()->comment('帳號');
             $table->string('name')->comment('姓名');
             $table->string('email')->nullable()->comment('電子郵件');
