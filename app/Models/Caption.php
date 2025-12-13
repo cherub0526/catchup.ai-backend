@@ -6,9 +6,12 @@ namespace App\Models;
 
 use Hyperf\Database\Model\SoftDeletes;
 use Hyperf\Database\Model\Relations\BelongsTo;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
 
 class Caption extends Model
 {
+    use HasUlids;
+
     use SoftDeletes;
 
     public const LOCAL_ZH_TW = 'zh_tw';
@@ -17,7 +20,7 @@ class Caption extends Model
 
     public static array $localeMaps = [
         self::LOCAL_ZH_TW => '繁體中文',
-        self::LOCAL_EN => '英文',
+        self::LOCAL_EN    => '英文',
     ];
 
     public static array $groqMaps = [
@@ -42,10 +45,10 @@ class Caption extends Model
      * The attributes that should be cast to native types.
      */
     protected array $casts = [
-        'media_id' => 'integer',
-        'locale' => 'string',
-        'text' => 'string',
-        'segments' => 'array',
+        'media_id'      => 'integer',
+        'locale'        => 'string',
+        'text'          => 'string',
+        'segments'      => 'array',
         'word_segments' => 'array',
     ];
 

@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\SoftDeletes;
+use Hyperf\Database\Model\Relations\HasMany;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
 
 class Rss extends Model
 {
+    use HasUlids;
+
     use SoftDeletes;
 
     public const TYPE_YOUTUBE = 'youtube';

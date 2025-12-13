@@ -8,10 +8,12 @@ use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\SoftDeletes;
 use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Database\Eloquent\Concerns\HasUlids;
+use Hypervel\Database\Eloquent\Relations\HasMany;
 
 class Plan extends Model
 {
     use HasUlids;
+
     use SoftDeletes;
 
     public const STATUS_ACTIVE = 'active';
@@ -19,7 +21,7 @@ class Plan extends Model
     public const STATUS_INACTIVE = 'inactive';
 
     public static array $statusMaps = [
-        self::STATUS_ACTIVE => 'Active',
+        self::STATUS_ACTIVE   => 'Active',
         self::STATUS_INACTIVE => 'Inactive',
     ];
 
@@ -52,7 +54,7 @@ class Plan extends Model
         return $query->where('status', self::STATUS_ACTIVE);
     }
 
-    public function prices(): \Hypervel\Database\Eloquent\Relations\HasMany
+    public function prices(): HasMany
     {
         return $this->hasMany(Price::class, 'plan_id', 'id');
     }

@@ -6,10 +6,13 @@ namespace App\Models;
 
 use Hyperf\Database\Model\SoftDeletes;
 use Hyperf\Database\Model\Relations\HasMany;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 
 class Media extends Model
 {
+    use HasUlids;
+
     use SoftDeletes;
 
     public const string STATUS_CREATED = 'created';

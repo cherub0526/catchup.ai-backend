@@ -15,7 +15,9 @@ use Hypervel\Database\Eloquent\Factories\HasFactory;
 class Subscription extends Model
 {
     use HasUlids;
+
     use SoftDeletes;
+
     use HasFactory;
 
     public const STATUS_PAYING = 'paying';
@@ -29,9 +31,9 @@ class Subscription extends Model
     public const PAYMENT_METHOD_PADDLE = 'paddle';
 
     public static array $statusMaps = [
-        self::STATUS_PAYING => '付款中',
-        self::STATUS_TRIAL => '試用中',
-        self::STATUS_ACTIVE => '訂閱中',
+        self::STATUS_PAYING   => '付款中',
+        self::STATUS_TRIAL    => '試用中',
+        self::STATUS_ACTIVE   => '訂閱中',
         self::STATUS_CANCELED => '已取消',
     ];
 
@@ -61,16 +63,16 @@ class Subscription extends Model
      * The attributes that should be cast to native types.
      */
     protected array $casts = [
-        'user_id' => 'integer',
-        'plan_id' => 'string',
-        'price_id' => 'string',
-        'payment_method' => 'string',
-        'start_date' => 'datetime',
-        'next_date' => 'datetime',
+        'user_id'           => 'integer',
+        'plan_id'           => 'string',
+        'price_id'          => 'string',
+        'payment_method'    => 'string',
+        'start_date'        => 'datetime',
+        'next_date'         => 'datetime',
         'cancellation_date' => 'datetime',
         'last_charged_date' => 'datetime',
-        'status' => 'string',
-        'note' => 'string',
+        'status'            => 'string',
+        'note'              => 'string',
     ];
 
     public function plan(): BelongsTo

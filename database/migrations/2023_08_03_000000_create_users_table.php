@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-use Hyperf\Database\Schema\Blueprint;
+use App\Utils\BaseMigration;
 use Hypervel\Support\Facades\Schema;
+use Hyperf\Database\Schema\Blueprint;
 
-return new class extends \App\Utils\BaseMigration {
+return new class extends BaseMigration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->ulid()->primary();
             $table->string('account')->index()->nullable()->comment('帳號');
             $table->string('name')->comment('姓名');
             $table->string('email')->nullable()->comment('電子郵件');

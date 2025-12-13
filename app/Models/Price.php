@@ -8,10 +8,12 @@ use Hyperf\Database\Model\Builder;
 use Hypervel\Database\Eloquent\SoftDeletes;
 use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Database\Eloquent\Concerns\HasUlids;
+use Hypervel\Database\Eloquent\Relations\BelongsTo;
 
 class Price extends Model
 {
     use HasUlids;
+
     use SoftDeletes;
 
     public const UNIT_MONTHLY = 'monthly';
@@ -21,9 +23,9 @@ class Price extends Model
     public const UNIT_ANNUALLY = 'annually';
 
     public static array $unitMaps = [
-        self::UNIT_MONTHLY => '每月',
+        self::UNIT_MONTHLY   => '每月',
         self::UNIT_QUARTERLY => '每季',
-        self::UNIT_ANNUALLY => '每年',
+        self::UNIT_ANNUALLY  => '每年',
     ];
 
     protected array $with = ['paddle'];
@@ -44,7 +46,7 @@ class Price extends Model
      */
     protected array $casts = [];
 
-    public function plan(): \Hypervel\Database\Eloquent\Relations\BelongsTo
+    public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class, 'plan_id', 'id');
     }

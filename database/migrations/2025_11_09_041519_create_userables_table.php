@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
-use Hyperf\Database\Schema\Blueprint;
+use App\Utils\BaseMigration;
 use Hyperf\Database\Schema\Schema;
+use Hyperf\Database\Schema\Blueprint;
 
-return new class extends \App\Utils\BaseMigration {
+return new class extends BaseMigration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('userables', function (Blueprint $table) {
-            $table->bigInteger('user_id')->nullable()->index()->comment('使用者 ID');
-            $table->bigInteger('rss_id')->nullable()->index()->comment('RSS ID');
-            $table->bigInteger('media_id')->nullable()->index()->comment('媒體 ID');
+            $table->foreignUlid('user_id')->nullable()->index()->comment('使用者 ID');
+            $table->foreignUlid('rss_id')->nullable()->index()->comment('RSS ID');
+            $table->foreignUlid('media_id')->nullable()->index()->comment('媒體 ID');
             $this->timestampsWithIndex($table, false, false);
         });
     }

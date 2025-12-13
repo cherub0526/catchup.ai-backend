@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Hyperf\Database\Model\Relations\BelongsTo;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
 
 class Summary extends Model
 {
+    use HasUlids;
+
     public const LOCALE_ZH_TW = 'zh_tw';
 
     public const LOCALE_EN = 'en';

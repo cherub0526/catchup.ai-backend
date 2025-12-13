@@ -13,6 +13,7 @@ use Hypervel\Database\Eloquent\Relations\BelongsTo;
 class Transaction extends Model
 {
     use HasUlids;
+
     use SoftDeletes;
 
     protected ?string $table = 'transactions';
@@ -32,9 +33,9 @@ class Transaction extends Model
      */
     protected array $casts = [
         'subscription_id' => 'integer',
-        'billing_date' => 'datetime',
-        'amount' => 'float',
-        'status' => 'string',
+        'billing_date'    => 'datetime',
+        'amount'          => 'float',
+        'status'          => 'string',
     ];
 
     public function subscription(): BelongsTo
