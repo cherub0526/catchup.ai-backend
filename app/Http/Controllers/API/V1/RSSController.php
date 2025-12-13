@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Models\Rss;
+use App\Jobs\Rss\SyncJob;
+use Hypervel\Http\Request;
+use App\Validators\RSSValidator;
+use App\Http\Resources\RSSResource;
+use Psr\Http\Message\ResponseInterface;
+use App\Exceptions\NotFoundHttpException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\AbstractController;
-use App\Http\Resources\RSSResource;
-use App\Jobs\Rss\SyncJob;
-use App\Models\Rss;
-use App\Validators\RSSValidator;
-use Hypervel\Http\Request;
 
 class RSSController extends AbstractController
 {
@@ -24,7 +26,7 @@ class RSSController extends AbstractController
         $v = new RSSValidator($params);
         $v->setIndexRules();
 
-        if (! $v->passes()) {
+        if (!$v->passes()) {
             throw new InvalidRequestException($v->errors()->toArray());
         }
 
@@ -44,7 +46,7 @@ class RSSController extends AbstractController
         $v = new RSSValidator($params);
         $v->setStoreRules();
 
-        if (! $v->passes()) {
+        if (!$v->passes()) {
             throw new InvalidRequestException($v->errors()->toArray());
         }
 
@@ -57,10 +59,10 @@ class RSSController extends AbstractController
             throw new InvalidRequestException(['url' => [__('validators.controllers.rss.invalid_url')]]);
         }
 
-        $rss = \App\Models\Rss::create([
-            'type' => $params['type'],
-            'title' => (string) ($xml->title ?? 'No Title'),
-            'url' => $params['url'],
+        $rss = Rss::create([
+            'type'    => $params['type'],
+            'title'   => (string) ($xml->title ?? 'No Title'),
+            'url'     => $params['url'],
             'comment' => '',
         ]);
 
@@ -72,16 +74,16 @@ class RSSController extends AbstractController
     }
 
     /**
-     * @throws InvalidRequestException
+     * @throws NotFoundHttpException
      */
-    public function destroy(Request $request, int $rssId): \Psr\Http\Message\ResponseInterface
+    public function destroy(Request $request, string $rssId): ResponseInterface
     {
-        if (! $rss = $request->user()->rss()->find($rssId)) {
-            throw new InvalidRequestException(['rss_id' => [__('validators.controllers.rss.not_found')]]);
+        if (!$rss = $request->user()->rss()->find($rssId)) {
+            throw new NotFoundHttpException();
         }
 
         $rss->users()->detach($request->user()->id);
 
-        return response()->make('OK.');
+        return response()->make(self::RESPONSE_OK);
     }
 }

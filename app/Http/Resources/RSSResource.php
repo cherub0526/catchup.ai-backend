@@ -16,10 +16,10 @@ class RSSResource extends JsonResource
     public function toArray(): array
     {
         return [
-            'id' => intval($this->resource->id),
-            'type' => strval($this->resource->type),
-            'url' => strval($this->resource->url),
-            'title' => strval($this->resource->title),
+            'id'         => strval($this->resource->id),
+            'type'       => strval($this->resource->type),
+            'url'        => strval($this->resource->url),
+            'title'      => strval($this->resource->title),
             'created_at' => strval($this->resource->created_at),
         ];
     }

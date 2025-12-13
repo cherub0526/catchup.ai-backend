@@ -7,12 +7,15 @@ namespace App\Models;
 use Hyperf\Database\Model\SoftDeletes;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hypervel\Database\Eloquent\Concerns\HasUlids;
+use Hypervel\Database\Eloquent\Factories\HasFactory;
 
 class Rss extends Model
 {
     use HasUlids;
 
     use SoftDeletes;
+
+    use HasFactory;
 
     public const TYPE_YOUTUBE = 'youtube';
 
