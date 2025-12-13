@@ -12,6 +12,7 @@ use App\Models\Subscription;
 use App\Services\PaddleClient;
 use Paddle\SDK\Exceptions\ApiError;
 use App\Http\Resources\PlanResource;
+use Psr\Http\Message\ResponseInterface;
 use App\Validators\SubscriptionValidator;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\AbstractController;
@@ -28,7 +29,7 @@ class SubscriptionsController extends AbstractController
         }
 
         // 如果沒有找訂閱的方案，預設就是免費的月訂閱方案
-        if (! isset($plan)) {
+        if (!isset($plan)) {
             $plan = Plan::query()->whereHas('prices', function ($builder) {
                 $builder->where('unit', Price::UNIT_MONTHLY)->where('price', 0);
             })->first();
@@ -48,44 +49,44 @@ class SubscriptionsController extends AbstractController
     /**
      * @throws InvalidRequestException
      */
-    public function store(Request $request): \Psr\Http\Message\ResponseInterface
+    public function store(Request $request): ResponseInterface
     {
         $params = $request->only(['planId', 'priceId']);
 
         $v = new SubscriptionValidator($params);
         $v->setStoreRules();
 
-        if (! $v->passes()) {
+        if (!$v->passes()) {
             throw new InvalidRequestException($v->errors()->toArray());
         }
 
-        if (! $plan = Plan::query()->find($params['planId'])) {
+        if (!$plan = Plan::query()->find($params['planId'])) {
             throw new InvalidRequestException(['planId' => [__('validators.controllers.subscription.plan_not_found')]]);
         }
 
-        if (! $price = Price::query()->find($params['priceId'])) {
+        if (!$price = Price::query()->find($params['priceId'])) {
             throw new InvalidRequestException(['priceId' => [__('validators.controllers.subscription.price_not_found')]]);
         }
 
-        if (! $plan->prices()->find($price->id)) {
+        if (!$plan->prices()->find($price->id)) {
             throw new InvalidRequestException(['priceId' => [__('validators.controllers.subscription.price_not_in_plan')]]);
         }
 
         $subscription = $request->user()->subscriptions()->create([
-            'plan_id' => $plan->id,
-            'price_id' => $price->id,
+            'plan_id'        => $plan->id,
+            'price_id'       => $price->id,
             'payment_method' => Subscription::PAYMENT_METHOD_PADDLE,
-            'status' => Subscription::STATUS_PAYING,
+            'status'         => Subscription::STATUS_PAYING,
         ]);
 
         $data = [
             'paddle' => [
                 'client_token' => env('PADDLE_CLIENT_TOKEN'),
-                'environment' => env('PADDLE_SANDBOX') ? 'sandbox' : 'production',
+                'environment'  => env('PADDLE_SANDBOX') ? 'sandbox' : 'production',
             ],
-            'items' => [$price->paddle->paddle_id],
+            'items'    => [$price->paddle->paddle_id],
             'customer' => [
-                'name' => $request->user()->name,
+                'name'  => $request->user()->name,
                 'email' => $request->user()->email,
             ],
             'customData' => [
@@ -105,7 +106,7 @@ class SubscriptionsController extends AbstractController
      */
     public function update(Request $request, string $subscriptionId)
     {
-        if (! $subscription = $request->user()->subscriptions()->find($subscriptionId)) {
+        if (!$subscription = $request->user()->subscriptions()->find($subscriptionId)) {
             throw new InvalidRequestException(['subscriptionId' => [__('validators.controllers.subscription.not_found')]]);
         }
 
@@ -124,9 +125,9 @@ class SubscriptionsController extends AbstractController
                 $items = $paddleTransaction->items;
 
                 $subscription->fill([
-                    'status' => Subscription::STATUS_ACTIVE,
+                    'status'     => Subscription::STATUS_ACTIVE,
                     'start_date' => $billedAt->clone()->toDateTime(),
-                    'next_date' => $billedAt->clone()->add(
+                    'next_date'  => $billedAt->clone()->add(
                         sprintf(
                             '%d %s',
                             $items[0]->price->billingCycle->frequency,
@@ -149,21 +150,21 @@ class SubscriptionsController extends AbstractController
     {
     }
 
-    public function usage(Request $request): \Psr\Http\Message\ResponseInterface
+    public function usage(Request $request): ResponseInterface
     {
         $between = [
             'start' => now()->startOfMonth(),
-            'end' => now()->endOfMonth(),
+            'end'   => now()->endOfMonth(),
         ];
         return response()->json([
             'data' => [
                 'plan' => [
                     'channels' => 1,
-                    'media' => 5,
+                    'media'    => 5,
                 ],
                 'usage' => [
                     'channels' => $request->user()->rss()->count(),
-                    'media' => $request->user()->media()->whereBetween('userables.created_at', $between)->count(),
+                    'media'    => $request->user()->media()->whereBetween('userables.created_at', $between)->count(),
                 ],
             ],
         ]);

@@ -87,7 +87,7 @@ Route::group('/rss', function () {
             'middleware' => ['auth'],
         ]
     );
-    Route::delete('/{rssId:[0-9]+}', [
+    Route::delete('/{rssId:[0-7][0-9a-hjkmnp-tv-z]{25}}', [
         'as'         => 'destroy',
         'uses'       => RSSController::class . '@destroy',
         'middleware' => ['auth'],
@@ -104,7 +104,7 @@ Route::group('/media', function () {
         ]
     );
     Route::get(
-        '/{mediaId:[0-9]+}',
+        '/{mediaId:[0-7][0-9a-hjkmnp-tv-z]{25}}',
         [
             'as'         => 'show',
             'uses'       => MediaController::class . '@show',
@@ -112,7 +112,7 @@ Route::group('/media', function () {
         ]
     );
 
-    Route::group('/{mediaId:[0-9]+}/summaries', function () {
+    Route::group('/{mediaId:[0-7][0-9a-hjkmnp-tv-z]{25}}/summaries', function () {
         Route::get(
             '/',
             [
@@ -122,7 +122,7 @@ Route::group('/media', function () {
             ]
         );
         Route::get(
-            '/{summaryId:[0-9]+}',
+            '/{summaryId:[0-7][0-9a-hjkmnp-tv-z]{25}}',
             [
                 'as'         => 'show',
                 'uses'       => SummariesController::class . '@show',
@@ -131,7 +131,7 @@ Route::group('/media', function () {
         );
     }, ['as' => 'summaries']);
 
-    Route::group('/{mediaId:[0-9]+}/captions', function () {
+    Route::group('/{mediaId:[0-7][0-9a-hjkmnp-tv-z]{25}}/captions', function () {
         Route::get(
             '/',
             [
@@ -150,7 +150,7 @@ Route::group('/media', function () {
         );
     }, ['as' => 'captions']);
 
-    Route::group('/{mediaId:[0-9]+}/chat', function () {
+    Route::group('/{mediaId:[0-7][0-9a-hjkmnp-tv-z]{25}}/chat', function () {
         Route::post('/', [
             'as'         => 'store',
             'uses'       => ChatController::class . '@store',

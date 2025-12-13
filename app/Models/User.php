@@ -40,7 +40,6 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'social_type',
-        'paddle_customer_id',
     ];
 
     public function oauths(): HasMany
