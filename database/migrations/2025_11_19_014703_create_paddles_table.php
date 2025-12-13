@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-use Hyperf\Database\Schema\Blueprint;
+use App\Utils\BaseMigration;
 use Hyperf\Database\Schema\Schema;
+use Hyperf\Database\Schema\Blueprint;
 
-return new class extends \App\Utils\BaseMigration {
+return new class extends BaseMigration {
     /**
      * Run the migrations.
      */
@@ -13,7 +14,7 @@ return new class extends \App\Utils\BaseMigration {
     {
         Schema::create('paddles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('foreign_id')->index()->comment('外鍵 ID');
+            $table->string('foreign_id')->index()->comment('外鍵 ID');
             $table->string('foreign_type')->index()->comment('外鍵 Type');
             $table->string('paddle_id')->index()->nullable()->comment('Paddle ID');
             $table->text('paddle_detail')->nullable()->comment('Paddle Detail');
