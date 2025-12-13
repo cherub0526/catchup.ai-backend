@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Validators;
 
+use App\Models\Media;
+
 class MediaValidator extends BaseValidator
 {
     public function __construct($params)
@@ -12,18 +14,18 @@ class MediaValidator extends BaseValidator
 
         $this->messages = [
             'type.required' => __('validators.media.type.required'),
-            'type.string' => __('validators.media.type.string'),
-            'type.in' => __('validators.media.type.in'),
+            'type.string'   => __('validators.media.type.string'),
+            'type.in'       => __('validators.media.type.in'),
             'limit.integer' => __('validators.media.limit.integer'),
-            'limit.min' => __('validators.media.limit.min'),
-            'limit.max' => __('validators.media.limit.max'),
+            'limit.min'     => __('validators.media.limit.min'),
+            'limit.max'     => __('validators.media.limit.max'),
         ];
     }
 
     public function setIndexRules(): self
     {
         $this->rules = [
-            'type' => 'required|string|in:' . implode(',', array_keys(\App\Models\Media::$typeMaps)),
+            'type'  => 'required|string|in:' . implode(',', array_keys(Media::$typeMaps)),
             'limit' => 'sometimes|integer|min:1|max:10',
         ];
 

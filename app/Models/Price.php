@@ -9,6 +9,7 @@ use Hypervel\Database\Eloquent\SoftDeletes;
 use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Database\Eloquent\Concerns\HasUlids;
 use Hypervel\Database\Eloquent\Relations\BelongsTo;
+use Hypervel\Database\Eloquent\Factories\HasFactory;
 
 class Price extends Model
 {
@@ -16,11 +17,13 @@ class Price extends Model
 
     use SoftDeletes;
 
-    public const UNIT_MONTHLY = 'monthly';
+    use HasFactory;
 
-    public const UNIT_QUARTERLY = 'quarterly';
+    public const string UNIT_MONTHLY = 'monthly';
 
-    public const UNIT_ANNUALLY = 'annually';
+    public const string UNIT_QUARTERLY = 'quarterly';
+
+    public const string UNIT_ANNUALLY = 'annually';
 
     public static array $unitMaps = [
         self::UNIT_MONTHLY   => '每月',

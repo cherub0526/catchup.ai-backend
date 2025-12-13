@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-use Hyperf\Database\Schema\Blueprint;
+use App\Models\Plan;
+use App\Utils\BaseMigration;
 use Hyperf\Database\Schema\Schema;
+use Hyperf\Database\Schema\Blueprint;
 
-return new class extends \App\Utils\BaseMigration {
+return new class extends BaseMigration {
     /**
      * Run the migrations.
      */
@@ -20,7 +22,7 @@ return new class extends \App\Utils\BaseMigration {
             $table->unsignedBigInteger('chat_limit')->default(0)->comment('聊天次數限制，0表示不限制');
 
             $table->unsignedInteger('sort')->default(0)->comment('排序');
-            $table->string('status')->default(\App\Models\Plan::STATUS_ACTIVE)->comment('狀態');
+            $table->string('status')->default(Plan::STATUS_ACTIVE)->comment('狀態');
             $this->timestampsWithIndex($table, false, true);
 
             $table->comment('訂閱方案表');

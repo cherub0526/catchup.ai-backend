@@ -13,7 +13,7 @@ class SummariesController
     /**
      * @throws InvalidRequestException
      */
-    public function index(Request $request, int $mediaId)
+    public function index(Request $request, string $mediaId)
     {
         if (!$media = $request->user()->media()->find($mediaId)) {
             throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
@@ -24,7 +24,7 @@ class SummariesController
         return new SummaryResource($summary);
     }
 
-    public function show(Request $request, int $mediaId, int $summaryId)
+    public function show(Request $request, string $mediaId, string $summaryId)
     {
     }
 }

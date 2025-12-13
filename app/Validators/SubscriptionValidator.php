@@ -11,17 +11,17 @@ class SubscriptionValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'planId.required' => __('validators.subscription.planId.required'),
-            'planId.string' => __('validators.subscription.planId.string'),
+            'planId.required'  => __('validators.subscription.planId.required'),
+            'planId.string'    => __('validators.subscription.planId.string'),
             'priceId.required' => __('validators.subscription.priceId.required'),
-            'priceId.string' => __('validators.subscription.priceId.string'),
+            'priceId.string'   => __('validators.subscription.priceId.string'),
         ];
     }
 
     public function setStoreRules(): self
     {
         $this->rules = [
-            'planId' => 'required|string',
+            'planId'  => 'required|string',
             'priceId' => 'required|string',
         ];
 

@@ -11,17 +11,17 @@ class UserValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'name.required' => __('validators.user.name.required'),
-            'name.string' => __('validators.user.name.string'),
+            'name.required'  => __('validators.user.name.required'),
+            'name.string'    => __('validators.user.name.string'),
             'email.required' => __('validators.user.email.required'),
-            'email.email' => __('validators.user.email.email'),
+            'email.email'    => __('validators.user.email.email'),
         ];
     }
 
     public function setUpdateRules(): self
     {
         $this->rules = [
-            'name' => 'required|string',
+            'name'  => 'required|string',
             'email' => 'required|email',
         ];
 

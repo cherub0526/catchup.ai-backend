@@ -29,7 +29,7 @@ class SubscriptionsController extends AbstractController
         }
 
         // 如果沒有找訂閱的方案，預設就是免費的月訂閱方案
-        if (!isset($plan)) {
+        if (!isset($plan) || !$plan) {
             $plan = Plan::query()->whereHas('prices', function ($builder) {
                 $builder->where('unit', Price::UNIT_MONTHLY)->where('price', 0);
             })->first();
@@ -65,11 +65,15 @@ class SubscriptionsController extends AbstractController
         }
 
         if (!$price = Price::query()->find($params['priceId'])) {
-            throw new InvalidRequestException(['priceId' => [__('validators.controllers.subscription.price_not_found')]]);
+            throw new InvalidRequestException(
+                ['priceId' => [__('validators.controllers.subscription.price_not_found')]]
+            );
         }
 
         if (!$plan->prices()->find($price->id)) {
-            throw new InvalidRequestException(['priceId' => [__('validators.controllers.subscription.price_not_in_plan')]]);
+            throw new InvalidRequestException(
+                ['priceId' => [__('validators.controllers.subscription.price_not_in_plan')]]
+            );
         }
 
         $subscription = $request->user()->subscriptions()->create([
@@ -107,7 +111,9 @@ class SubscriptionsController extends AbstractController
     public function update(Request $request, string $subscriptionId)
     {
         if (!$subscription = $request->user()->subscriptions()->find($subscriptionId)) {
-            throw new InvalidRequestException(['subscriptionId' => [__('validators.controllers.subscription.not_found')]]);
+            throw new InvalidRequestException(
+                ['subscriptionId' => [__('validators.controllers.subscription.not_found')]]
+            );
         }
 
         $params = $request->all();
@@ -146,7 +152,7 @@ class SubscriptionsController extends AbstractController
     /**
      * 取消訂閱.
      */
-    public function destroy(Request $request, int $subscriptionId)
+    public function destroy(Request $request, string $subscriptionId)
     {
     }
 

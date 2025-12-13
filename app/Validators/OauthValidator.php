@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Validators;
 
+use App\Models\Oauth;
+
 class OauthValidator extends BaseValidator
 {
     public function __construct(array $params)
@@ -12,16 +14,16 @@ class OauthValidator extends BaseValidator
 
         $this->messages = [
             'provider.required' => __('validators.oauth.provider.required'),
-            'provider.in' => __('validators.oauth.provider.in'),
-            'code.required' => __('validators.oauth.code.required'),
+            'provider.in'       => __('validators.oauth.provider.in'),
+            'code.required'     => __('validators.oauth.code.required'),
         ];
     }
 
     public function setStoreRules(): self
     {
         $this->rules = [
-            'provider' => 'required|in:' . implode(',', array_keys(\App\Models\Oauth::$providerMaps)),
-            'code' => 'required',
+            'provider' => 'required|in:' . implode(',', array_keys(Oauth::$providerMaps)),
+            'code'     => 'required',
         ];
 
         return $this;

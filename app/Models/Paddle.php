@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Hypervel\Database\Eloquent\Relations\BelongsTo;
+use Hypervel\Database\Eloquent\Factories\HasFactory;
 
 class Paddle extends Model
 {
+    use HasFactory;
+
     protected ?string $table = 'paddles';
 
     /**

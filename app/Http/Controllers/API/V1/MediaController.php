@@ -4,24 +4,25 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1;
 
+use Hypervel\Http\Request;
+use App\Validators\MediaValidator;
+use App\Http\Resources\MediaResource;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\AbstractController;
-use App\Http\Resources\MediaResource;
-use App\Validators\MediaValidator;
-use Hypervel\Http\Request;
+use Hypervel\Http\Resources\Json\AnonymousResourceCollection;
 
 class MediaController extends AbstractController
 {
     /**
      * @throws InvalidRequestException
      */
-    public function index(Request $request): \Hypervel\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
         $params = $request->only(['type', 'range', 'limit']);
         $v = new MediaValidator($params);
         $v->setIndexRules();
 
-        if (! $v->passes()) {
+        if (!$v->passes()) {
             throw new InvalidRequestException($v->errors()->toArray());
         }
 
@@ -30,9 +31,9 @@ class MediaController extends AbstractController
             ->when($params['range'] ?? false, function ($query) use ($params) {
                 $date = match ($params['range']) {
                     'today' => now()->startOfDay(),
-                    'week' => now()->subWeek()->startOfDay(),
+                    'week'  => now()->subWeek()->startOfDay(),
                     'month' => now()->subMonth()->startOfDay(),
-                    'year' => now()->subYear()->startOfDay(),
+                    'year'  => now()->subYear()->startOfDay(),
                     default => null,
                 };
                 if ($date) {
@@ -50,9 +51,9 @@ class MediaController extends AbstractController
     /**
      * @throws InvalidRequestException
      */
-    public function show(Request $request, int $mediaId): MediaResource
+    public function show(Request $request, string $mediaId): MediaResource
     {
-        if (! $media = $request->user()->media()->find($mediaId)) {
+        if (!$media = $request->user()->media()->find($mediaId)) {
             throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 

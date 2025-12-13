@@ -7,15 +7,16 @@ namespace App\Http\Controllers\API\V1\Media;
 use Hypervel\Http\Request;
 use App\Http\Resources\CaptionResource;
 use App\Exceptions\InvalidRequestException;
+use Hypervel\Http\Resources\Json\AnonymousResourceCollection;
 
 class CaptionsController
 {
     /**
      * @throws InvalidRequestException
      */
-    public function index(Request $request, int $mediaId): \Hypervel\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request, string $mediaId): AnonymousResourceCollection
     {
-        if (! $media = $request->user()->media()->find($mediaId)) {
+        if (!$media = $request->user()->media()->find($mediaId)) {
             throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
@@ -27,13 +28,13 @@ class CaptionsController
     /**
      * @throws InvalidRequestException
      */
-    public function show(Request $request, int $mediaId, int $captionId): CaptionResource
+    public function show(Request $request, string $mediaId, string $captionId): CaptionResource
     {
-        if (! $media = $request->user()->media()->find($mediaId)) {
+        if (!$media = $request->user()->media()->find($mediaId)) {
             throw new InvalidRequestException(['media' => [__('validators.controllers.media.not_found')]]);
         }
 
-        if (! $caption = $media->captions()->find($captionId)) {
+        if (!$caption = $media->captions()->find($captionId)) {
             throw new InvalidRequestException(['caption' => [__('validators.controllers.media.caption_not_found')]]);
         }
 

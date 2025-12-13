@@ -9,10 +9,13 @@ use Hyperf\Database\Model\SoftDeletes;
 use Hypervel\Database\Eloquent\Relations\HasOne;
 use Hypervel\Database\Eloquent\Concerns\HasUlids;
 use Hypervel\Database\Eloquent\Relations\HasMany;
+use Hypervel\Database\Eloquent\Factories\HasFactory;
 
 class Plan extends Model
 {
     use HasUlids;
+
+    use HasFactory;
 
     use SoftDeletes;
 
