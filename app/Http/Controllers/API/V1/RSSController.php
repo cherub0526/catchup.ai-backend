@@ -59,14 +59,18 @@ class RSSController extends AbstractController
             throw new InvalidRequestException(['url' => [__('validators.controllers.rss.invalid_url')]]);
         }
 
-        $rss = Rss::create([
-            'type'    => $params['type'],
-            'title'   => (string) ($xml->title ?? 'No Title'),
-            'url'     => $params['url'],
-            'comment' => '',
-        ]);
+        if (!$rss = Rss::query()->where('url', $params['url'])->first()) {
+            $rss = Rss::create([
+                'type'    => $params['type'],
+                'title'   => (string) ($xml->title ?? 'No Title'),
+                'url'     => $params['url'],
+                'comment' => '',
+            ]);
+        }
 
-        $rss->users()->attach($request->user()->id);
+        if (!$rss->users()->find($request->user()->id)) {
+            $rss->users()->attach($request->user()->id);
+        }
 
         SyncJob::dispatch($rss);
 
