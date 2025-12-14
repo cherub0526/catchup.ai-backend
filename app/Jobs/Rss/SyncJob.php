@@ -6,7 +6,9 @@ namespace App\Jobs\Rss;
 
 use Carbon\Carbon;
 use App\Models\Rss;
+use App\Models\Plan;
 use App\Models\Media;
+use App\Models\Price;
 use Hypervel\Queue\Queueable;
 use Hypervel\Queue\Contracts\ShouldQueue;
 
@@ -45,19 +47,19 @@ class SyncJob implements ShouldQueue
 
         foreach ($xml->entry as $entry) {
             $data = [
-                'id' => (string) $entry->id,
-                'yt:videoId' => (string) $entry->children($namespaces['yt'])->videoId,
+                'id'           => (string) $entry->id,
+                'yt:videoId'   => (string) $entry->children($namespaces['yt'])->videoId,
                 'yt:channelId' => (string) $entry->children($namespaces['yt'])->channelId,
-                'title' => (string) $entry->title,
-                'description' => (string) $entry->description,
-                'link' => (string) $entry->link['href'],
-                'author' => [
+                'title'        => (string) $entry->title,
+                'description'  => (string) $entry->description,
+                'link'         => (string) $entry->link['href'],
+                'author'       => [
                     'name' => (string) $entry->author->name,
-                    'uri' => (string) $entry->author->uri,
+                    'uri'  => (string) $entry->author->uri,
                 ],
                 'published' => (string) $entry->published,
-                'updated' => (string) $entry->updated,
-                'media' => json_decode(json_encode($entry->children($namespaces['media'])->group), true),
+                'updated'   => (string) $entry->updated,
+                'media'     => json_decode(json_encode($entry->children($namespaces['media'])->group), true),
             ];
             $data['media']['content']['url'] = (string) $entry->children(
                 $namespaces['media']
@@ -92,23 +94,27 @@ class SyncJob implements ShouldQueue
             }
 
             $media = Media::create([
-                'type' => Media::TYPE_YOUTUBE,
-                'title' => $data['title'],
+                'type'        => Media::TYPE_YOUTUBE,
+                'title'       => $data['title'],
                 'resource_id' => $data['id'],
                 'description' => is_string($data['media']['description'])
                     ? $data['media']['description']
                     : '',
-                'duration' => 0,
-                'thumbnail' => $data['media']['thumbnail']['url'] ?? '',
+                'duration'     => 0,
+                'thumbnail'    => $data['media']['thumbnail']['url'] ?? '',
                 'published_at' => Carbon::parse($data['published']),
-                'status' => Media::STATUS_CREATED,
+                'status'       => Media::STATUS_CREATED,
                 'video_detail' => $data,
                 'audio_detail' => [],
             ]);
             $medias->push($media);
         }
 
-        $this->rss->users()->chunkById(100, function ($users) use ($medias, $ids) {
+        $freePlan = Plan::query()->whereHas('prices', function ($builder) {
+            $builder->where('price', 0)->where('unit', Price::UNIT_MONTHLY);
+        })->first();
+
+        $this->rss->users()->chunkById(100, function ($users) use ($medias, $ids, $freePlan) {
             $betweenDays = [
                 now()->subMonth()->startOfDay(),
                 now()->endOfDay(),
@@ -117,7 +123,9 @@ class SyncJob implements ShouldQueue
                 $count = $user->media()->whereBetween('userables.created_at', $betweenDays)->count();
 
                 $subscription = $user->subscriptions()->active()->orderBy('id', 'desc')->first();
-                $remainCount = $subscription->plan->video_limit - $count;
+
+                $plan = !$subscription ? $freePlan : $subscription->plan;
+                $remainCount = $plan->video_limit - $count;
 
                 if ($remainCount <= 0) {
                     continue;
