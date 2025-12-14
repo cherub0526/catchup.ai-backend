@@ -12,6 +12,7 @@ use App\Models\Subscription;
 use App\Services\PaddleClient;
 use Paddle\SDK\Exceptions\ApiError;
 use App\Http\Resources\PlanResource;
+use App\Services\SubscriptionService;
 use Psr\Http\Message\ResponseInterface;
 use App\Validators\SubscriptionValidator;
 use App\Exceptions\InvalidRequestException;
@@ -22,18 +23,10 @@ use Paddle\SDK\Notifications\Entities\Payout\PayoutStatus;
 
 class SubscriptionsController extends AbstractController
 {
-    public function index(Request $request): PlanResource
+    public function index(Request $request, SubscriptionService $subscriptionService): PlanResource
     {
-        if ($subscription = $request->user()->subscriptions()->active()->orderBy('start_date', 'desc')->first()) {
-            $plan = $subscription->plan()->first();
-        }
-
-        // 如果沒有找訂閱的方案，預設就是免費的月訂閱方案
-        if (!isset($plan) || !$plan) {
-            $plan = Plan::query()->whereHas('prices', function ($builder) {
-                $builder->where('unit', Price::UNIT_MONTHLY)->where('price', 0);
-            })->first();
-        }
+        $subscription = $subscriptionService->getUserSubscription($request->user()->id);
+        $plan = $subscriptionService->getUserSubscriptionPlan($subscription);
 
         $plan->load([
             'prices' => function ($builder) use ($subscription) {

@@ -20,15 +20,15 @@ class Subscription extends Model
 
     use HasFactory;
 
-    public const STATUS_PAYING = 'paying';
+    public const string STATUS_PAYING = 'paying';
 
-    public const STATUS_TRIAL = 'trial';
+    public const string STATUS_TRIAL = 'trial';
 
-    public const STATUS_ACTIVE = 'active';
+    public const string STATUS_ACTIVE = 'active';
 
-    public const STATUS_CANCELED = 'canceled';
+    public const string STATUS_CANCELED = 'canceled';
 
-    public const PAYMENT_METHOD_PADDLE = 'paddle';
+    public const string PAYMENT_METHOD_PADDLE = 'paddle';
 
     public static array $statusMaps = [
         self::STATUS_PAYING   => '付款中',
