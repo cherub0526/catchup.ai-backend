@@ -149,17 +149,21 @@ class SubscriptionsController extends AbstractController
     {
     }
 
-    public function usage(Request $request): ResponseInterface
+    public function usage(Request $request, SubscriptionService $subscriptionService): ResponseInterface
     {
         $between = [
             'start' => now()->startOfMonth(),
             'end'   => now()->endOfMonth(),
         ];
+
+        $plan = $subscriptionService->getUserSubscriptionPlan(
+            $subscriptionService->getUserSubscription($request->user()->id)
+        );
         return response()->json([
             'data' => [
                 'plan' => [
-                    'channels' => 1,
-                    'media'    => 5,
+                    'channels' => $plan->channel_limit,
+                    'media'    => $plan->video_limit,
                 ],
                 'usage' => [
                     'channels' => $request->user()->rss()->count(),

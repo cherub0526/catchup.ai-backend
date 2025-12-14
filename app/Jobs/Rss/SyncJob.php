@@ -10,6 +10,7 @@ use App\Models\Plan;
 use App\Models\Media;
 use App\Models\Price;
 use Hypervel\Queue\Queueable;
+use App\Services\SubscriptionService;
 use Hypervel\Queue\Contracts\ShouldQueue;
 
 class SyncJob implements ShouldQueue
@@ -114,7 +115,7 @@ class SyncJob implements ShouldQueue
             $builder->where('price', 0)->where('unit', Price::UNIT_MONTHLY);
         })->first();
 
-        $this->rss->users()->chunkById(100, function ($users) use ($medias, $ids, $freePlan) {
+        $this->rss->users()->chunkById(100, function ($users) use ($medias, $ids) {
             $betweenDays = [
                 now()->subMonth()->startOfDay(),
                 now()->endOfDay(),
@@ -122,9 +123,9 @@ class SyncJob implements ShouldQueue
             foreach ($users as $user) {
                 $count = $user->media()->whereBetween('userables.created_at', $betweenDays)->count();
 
-                $subscription = $user->subscriptions()->active()->orderBy('id', 'desc')->first();
-
-                $plan = !$subscription ? $freePlan : $subscription->plan;
+                $subscriptionService = app(SubscriptionService::class);
+                $subscription = $subscriptionService->getUserSubscription($user->id);
+                $plan = $subscriptionService->getUserSubscriptionPlan($subscription);
                 $remainCount = $plan->video_limit - $count;
 
                 if ($remainCount <= 0) {
