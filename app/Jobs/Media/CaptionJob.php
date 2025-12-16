@@ -79,7 +79,7 @@ class CaptionJob implements ShouldQueue
                 $this->media->captions()->create([
                     'locale'   => $caption['code'],
                     'primary'  => 0,
-                    'text'     => collect($jsonArray)->map(fn ($line) => $line['text'])->join('. '),
+                    'text'     => collect($jsonArray)->map(fn ($line) => $line['text'])->join(' '),
                     'segments' => $jsonArray,
                 ]);
             }
