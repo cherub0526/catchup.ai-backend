@@ -6,9 +6,7 @@ namespace App\Jobs\Rss;
 
 use Carbon\Carbon;
 use App\Models\Rss;
-use App\Models\Plan;
 use App\Models\Media;
-use App\Models\Price;
 use Hypervel\Queue\Queueable;
 use App\Services\SubscriptionService;
 use Hypervel\Queue\Contracts\ShouldQueue;
@@ -110,10 +108,6 @@ class SyncJob implements ShouldQueue
             ]);
             $medias->push($media);
         }
-
-        $freePlan = Plan::query()->whereHas('prices', function ($builder) {
-            $builder->where('price', 0)->where('unit', Price::UNIT_MONTHLY);
-        })->first();
 
         $this->rss->users()->chunkById(100, function ($users) use ($medias, $ids) {
             $betweenDays = [
