@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Media;
 use Hypervel\Http\Resources\Json\JsonResource;
 
 class MediaResource extends JsonResource
@@ -17,7 +16,7 @@ class MediaResource extends JsonResource
     public function toArray(): array
     {
         return [
-            'id'           => intval($this->resource->id),
+            'id'           => strval($this->resource->id),
             'url'          => strval('https://www.youtube.com/embed/' . $this->resource->video_detail['yt:videoId']),
             'type'         => strval($this->resource->type),
             'title'        => strval($this->resource->title),

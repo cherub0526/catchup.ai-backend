@@ -16,9 +16,9 @@ class UserResource extends JsonResource
     public function toArray(): array
     {
         return [
-            'id' => intval($this->resource->id),
-            'name' => strval($this->resource->name),
-            'email' => strval($this->resource->email),
+            'id'      => strval($this->resource->id),
+            'name'    => strval($this->resource->name),
+            'email'   => strval($this->resource->email),
             'account' => strval($this->resource->account),
         ];
     }

@@ -16,13 +16,13 @@ class CaptionResource extends JsonResource
     public function toArray(): array
     {
         return [
-            'id' => intval($this->resource->id),
-            'locale' => strval($this->resource->locale),
+            'id'       => strval($this->resource->id),
+            'locale'   => strval($this->resource->locale),
             'segments' => array_map(function ($segment) {
                 return [
                     'start' => floatval($segment['start']),
-                    'end' => floatval($segment['end']),
-                    'text' => trim(strval($segment['text'])),
+                    'end'   => floatval($segment['end']),
+                    'text'  => trim(strval($segment['text'])),
                 ];
             }, $this->resource->segments ?? []),
         ];
