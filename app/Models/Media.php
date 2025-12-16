@@ -8,12 +8,15 @@ use Hyperf\Database\Model\SoftDeletes;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hypervel\Database\Eloquent\Concerns\HasUlids;
 use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hypervel\Database\Eloquent\Factories\HasFactory;
 
 class Media extends Model
 {
     use HasUlids;
 
     use SoftDeletes;
+
+    use HasFactory;
 
     public const string STATUS_CREATED = 'created';
 

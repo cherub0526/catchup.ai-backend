@@ -20,7 +20,16 @@ class MediaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'type'         => fake()->randomElement(array_keys(Media::$typeMaps)),
+            'resource_id'  => fake()->unique()->regexify('[a-zA-Z0-9_-]{11}'),
+            'title'        => fake()->sentence(),
+            'description'  => fake()->paragraph(),
+            'duration'     => fake()->numberBetween(60, 3600),
+            'thumbnail'    => fake()->imageUrl(),
+            'published_at' => fake()->dateTimeThisYear(),
+            'status'       => fake()->randomElement(array_keys(Media::$statusMap)),
+            'video_detail' => [],
+            'audio_detail' => [],
         ];
     }
 }
