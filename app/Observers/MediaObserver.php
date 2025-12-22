@@ -20,7 +20,7 @@ class MediaObserver
             InfoJob::dispatch($media);
         }
 
-        if ($media->status === Media::STATUS_PROGRESS && !count(array_keys($media->audio_detail)) > 0) {
+        if ($media->status === Media::STATUS_PROGRESS && count(array_keys($media->audio_detail)) > 0) {
             CaptionJob::dispatch($media);
         }
 
