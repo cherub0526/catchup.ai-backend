@@ -34,7 +34,9 @@ class Completion
             'model'    => $model,
             'messages' => $messages,
             // sensible default; can be overridden via $options
-            'max_tokens' => 2000,
+            'max_tokens'  => 20000,
+            'temperature' => 0.7,
+            'top_p'       => 1,
         ], $options);
 
         return $this->send('/chat/completions', $payload);
@@ -44,6 +46,6 @@ class Completion
     {
         $url = $this->baseUri . $path;
 
-        return Http::withToken($this->apiKey)->acceptJson()->post($url, $payload)->json();
+        return Http::withToken($this->apiKey)->timeout(60)->acceptJson()->post($url, $payload)->json();
     }
 }
