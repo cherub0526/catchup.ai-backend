@@ -52,9 +52,12 @@ class GroqController extends AbstractController
             ]);
 
             $caption->fill([
-                'text'          => $params['data']['text'],
-                'segments'      => $params['data']['segments'],
-                'word_segments' => $params['data']['words'],
+                'text'     => $params['data']['text'],
+                'segments' => array_map(function ($segment) {
+                    $segment['text'] = trim($segment['text']);
+                    return $segment;
+                }, $params['data']['segments']),
+                'word_segments' => $params['data']['words'] ?? [],
             ])->save();
         }
 
