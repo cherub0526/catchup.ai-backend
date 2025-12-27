@@ -8,6 +8,7 @@ use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\MediaController;
 use App\Http\Controllers\API\V1\UsersController;
 use App\Http\Controllers\API\V1\Media\ChatController;
+use App\Http\Controllers\API\V1\Webhook\GroqController;
 use App\Http\Controllers\API\V1\SubscriptionsController;
 use App\Http\Controllers\API\V1\Media\CaptionsController;
 use App\Http\Controllers\API\V1\Webhook\PaddleController;
@@ -205,8 +206,16 @@ Route::group('/webhook', function () {
     Route::post(
         '/paddle',
         [
-            'as'   => 'paddle',
+            'as'   => 'paddle.store',
             'uses' => PaddleController::class . '@store',
+        ]
+    );
+
+    Route::post(
+        '/groq/{mediaId}',
+        [
+            'as'   => 'groq.store',
+            'uses' => GroqController::class . '@store',
         ]
     );
 }, ['as' => 'webhook']);
