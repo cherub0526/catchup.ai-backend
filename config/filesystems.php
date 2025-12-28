@@ -51,9 +51,9 @@ return [
             'region'                  => env('AWS_DEFAULT_REGION'),
             'bucket'                  => env('AWS_BUCKET'),
             'url'                     => env('AWS_URL'),
-            'endpoint'                => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            'throw'                   => false,
+            'endpoint'                => env('AWS_ENDPOINT') ?: null,
+            'use_path_style_endpoint' => (bool) env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw'                   => true,
             'pool'                    => [
                 'min_objects'  => 1,
                 'max_objects'  => 10,

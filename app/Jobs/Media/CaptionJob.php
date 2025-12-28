@@ -6,11 +6,10 @@ namespace App\Jobs\Media;
 
 use Exception;
 use App\Models\Media;
-use App\Models\Caption;
+use App\Services\SQSService;
 use Hypervel\Queue\Queueable;
-use LucianoTonet\GroqPHP\Groq;
+use App\Services\StorageService;
 use Hypervel\Support\Facades\Http;
-use LucianoTonet\GroqPHP\GroqException;
 use Hypervel\Queue\Contracts\ShouldQueue;
 use App\Exceptions\InvalidRequestException;
 
@@ -31,10 +30,8 @@ class CaptionJob implements ShouldQueue
     }
 
     /**
-     * TODO. 未來要優化為 Groq Batch 的方案.
-     *
      * Execute the job.
-     * @throws GroqException
+     * @throws Exception
      */
     public function handle(): void
     {
@@ -48,7 +45,7 @@ class CaptionJob implements ShouldQueue
         $existLocales = $existCaptions->pluck('locale')->toArray();
 
         // 如果有預設字幕就抓取，沒有的話就使用 Groq 服務快速生成字幕
-        if ($subtitles && !empty($subtitles['items'])) {
+        if (false && $subtitles && !empty($subtitles['items'])) {
             foreach ($subtitles['items'] as $caption) {
                 if (in_array($caption['code'], $existLocales)) {
                     continue;
@@ -105,42 +102,28 @@ class CaptionJob implements ShouldQueue
 
             $this->download($audioUrl, $localAudioPath);
 
-            $groq = new Groq(env('GROQ_API_KEY'));
+            $storage = new StorageService();
+            $destination = 'audios/' . $this->media->id . '.webm';
+            $storage->upload($localAudioPath, $destination);
 
-            try {
-                $transcription = $groq->audio()->transcriptions()->create([
-                    'file'                    => $localAudioPath, /* Use local file path */
-                    'model'                   => 'whisper-large-v3-turbo',
-                    'response_format'         => 'verbose_json', /* Or 'text', 'json' */
-                    'temperature'             => 0,
-                    'timestamp_granularities' => ['word', 'segment'],
-                ]);
-
-                $locale = Caption::$groqMaps[$transcription['language']] ?? Caption::LOCAL_EN;
-
-                if (!$this->media->captions()->where('locale', $locale)->first()) {
-                    $this->media->captions()->create(
-                        [
-                            'locale'   => $locale,
-                            'primary'  => 1,
-                            'text'     => $transcription['text'],
-                            'segments' => array_map(function ($segment) {
-                                $segment['text'] = trim($segment['text']);
-                                return $segment;
-                            }, $transcription['segments']),
-                            'word_segments' => $transcription['words'] ?? [],
-                        ]
-                    );
-                }
-            } catch (GroqException $e) {
-                echo 'Error: ' . $e->getMessage();
-                $this->media->fill(['status' => Media::STATUS_TRANSCRIBE_FAILED])->save();
-            } finally {
-                // Clean up the temporary file
-                if (file_exists($localAudioPath)) {
-                    unlink($localAudioPath);
-                }
+            // Clean up the temporary file
+            if (file_exists($localAudioPath)) {
+                unlink($localAudioPath);
             }
+
+            $tempUrl = $storage->getTemporaryUrl($destination, now()->addHours(24));
+
+            $sqs = new SQSService();
+            $sqs->push('GroqTranscribe', [
+                'callback_url' => route('api.v1.webhook.groq.store', ['mediaId' => $this->media->id]),
+                'transcribe'   => [
+                    'url'                     => $tempUrl,
+                    'model'                   => 'whisper-large-v3-turbo',
+                    'response_format'         => 'verbose_json',
+                    'temperature'             => 0,
+                    'timestamp_granularities' => ['segment', 'word'],
+                ],
+            ]);
         }
 
         $this->media->fill(['status' => Media::STATUS_TRANSCRIBED])->save();
