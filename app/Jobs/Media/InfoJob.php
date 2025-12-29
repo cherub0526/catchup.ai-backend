@@ -8,7 +8,7 @@ use Exception;
 use App\Models\Media;
 use Hypervel\Queue\Queueable;
 use Hypervel\Queue\Contracts\ShouldQueue;
-use App\Services\RapidApi\YoutubeMediaDownloader;
+use App\Services\RapidApi\YoutubeMp3Downloader;
 
 class InfoJob implements ShouldQueue
 {
@@ -32,13 +32,15 @@ class InfoJob implements ShouldQueue
     public function handle(): void
     {
         $client = match ($this->media->type) {
-            Media::TYPE_YOUTUBE => new YoutubeMediaDownloader()
+            Media::TYPE_YOUTUBE => new YoutubeMp3Downloader()
         };
 
         $videoId = $this->media->video_detail['yt:videoId'];
 
         try {
-            $response = $client->video()->setVideoId($videoId)->details();
+            $response = $client->send('GET', '/mp3', [
+                'url' => sprintf('https://www.youtube.com/watch?v=%s', $videoId),
+            ]);
 
             $this->media->fill([
                 'status'       => Media::STATUS_PROGRESS,
