@@ -39,7 +39,7 @@ class CaptionJob implements ShouldQueue
 
         $detail = $this->media->audio_detail;
 
-        $subtitles = $detail['subtitles'];
+        $subtitles = $detail['subtitles'] ?? [];
 
         $existCaptions = $this->media->captions()->get(['media_id', 'locale']);
         $existLocales = $existCaptions->pluck('locale')->toArray();
