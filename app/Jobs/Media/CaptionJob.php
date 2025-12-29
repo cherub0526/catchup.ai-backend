@@ -80,6 +80,8 @@ class CaptionJob implements ShouldQueue
                     'segments' => $jsonArray,
                 ]);
             }
+
+            $this->media->fill(['status' => Media::STATUS_TRANSCRIBED])->save();
         } else {
             $audios = collect($detail['audios']['items'])
                 ->filter(function ($value) {
@@ -125,8 +127,6 @@ class CaptionJob implements ShouldQueue
                 ],
             ]);
         }
-
-        $this->media->fill(['status' => Media::STATUS_TRANSCRIBED])->save();
     }
 
     /**
