@@ -87,7 +87,7 @@ class CaptionJob implements ShouldQueue
                 ->filter(function ($value) {
                     $size = $value['size'] / 1024 / 1024;
 
-                    return $size <= 19 && $value['extension'] === 'weba';
+                    return $size <= 95 && $value['extension'] === 'weba';
                 })
                 ->sortBy('size');
 
