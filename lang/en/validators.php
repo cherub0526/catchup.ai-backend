@@ -145,4 +145,26 @@ return [
             ],
         ],
     ],
+
+    'paddle' => [
+        'event_id' => [
+            'required' => 'The event ID is required.',
+        ],
+        'event_type' => [
+            'required' => 'The event type is required.',
+            'in'       => 'The selected event type is invalid.',
+        ],
+        'occurred_at' => [
+            'required' => 'The occurred at timestamp is required.',
+        ],
+        'notification_id' => [
+            'required' => 'The notification ID is required.',
+        ],
+        'data' => [
+            'required' => 'The data payload is required.',
+            'id'       => [
+                'required' => 'The data ID is required.',
+            ],
+        ],
+    ],
 ];

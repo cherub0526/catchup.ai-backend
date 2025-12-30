@@ -145,4 +145,25 @@ return [
             ],
         ],
     ],
+    'paddle' => [
+        'event_id' => [
+            'required' => '事件 ID 為必填項。',
+        ],
+        'event_type' => [
+            'required' => '事件類型為必填項。',
+            'in'       => '無效的事件類型。',
+        ],
+        'occurred_at' => [
+            'required' => '發生時間為必填項。',
+        ],
+        'notification_id' => [
+            'required' => '通知 ID 為必填項。',
+        ],
+        'data' => [
+            'required' => '資料欄位為必填項。',
+            'id'       => [
+                'required' => '資料 ID 為必填項。',
+            ],
+        ],
+    ],
 ];
