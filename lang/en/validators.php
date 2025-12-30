@@ -8,18 +8,18 @@ return [
             'invalid_credentials' => 'Invalid account or password.',
         ],
         'media' => [
-            'not_found' => 'Media not found.',
+            'not_found'         => 'Media not found.',
             'caption_not_found' => 'Caption not found.',
         ],
         'rss' => [
             'invalid_url' => 'Invalid RSS URL.',
-            'not_found' => 'RSS not found.',
+            'not_found'   => 'RSS not found.',
         ],
         'subscription' => [
-            'plan_not_found' => 'Plan not found.',
-            'price_not_found' => 'Price not found.',
+            'plan_not_found'    => 'Plan not found.',
+            'price_not_found'   => 'Price not found.',
             'price_not_in_plan' => 'Price not found in plan.',
-            'not_found' => 'Subscription not found.',
+            'not_found'         => 'Subscription not found.',
         ],
         'webhook' => [
             'paddle' => [
@@ -30,59 +30,59 @@ return [
     'auth' => [
         'account' => [
             'required' => 'Account is required.',
-            'string' => 'Account must be a string.',
-            'min' => 'Account must be at least 6 characters.',
-            'max' => 'Account must not exceed 255 characters.',
-            'unique' => 'Account already exists.',
+            'string'   => 'Account must be a string.',
+            'min'      => 'Account must be at least 6 characters.',
+            'max'      => 'Account must not exceed 255 characters.',
+            'unique'   => 'Account already exists.',
         ],
         'email' => [
             'required' => 'Email is required.',
-            'email' => 'Email format is invalid.',
-            'max' => 'Email must not exceed 255 characters.',
+            'email'    => 'Email format is invalid.',
+            'max'      => 'Email must not exceed 255 characters.',
         ],
         'password' => [
-            'required' => 'Password is required.',
-            'string' => 'Password must be a string.',
-            'min' => 'Password must be at least 8 characters.',
+            'required'  => 'Password is required.',
+            'string'    => 'Password must be a string.',
+            'min'       => 'Password must be at least 8 characters.',
             'confirmed' => 'Password confirmation does not match.',
         ],
         'password_confirmation' => [
             'required' => 'Password confirmation is required.',
-            'string' => 'Password confirmation must be a string.',
+            'string'   => 'Password confirmation must be a string.',
         ],
     ],
     'chat' => [
         'messages' => [
             'required' => 'The messages field is required.',
-            'array' => 'The messages must be an array.',
-            'min' => 'The messages must have at least 1 item.',
-            'role' => [
+            'array'    => 'The messages must be an array.',
+            'min'      => 'The messages must have at least 1 item.',
+            'role'     => [
                 'required' => 'The role field is required.',
-                'string' => 'The role must be a string.',
-                'in' => 'The selected role is invalid.',
+                'string'   => 'The role must be a string.',
+                'in'       => 'The selected role is invalid.',
             ],
             'content' => [
                 'required' => 'The content field is required.',
-                'string' => 'The content must be a string.',
+                'string'   => 'The content must be a string.',
             ],
         ],
     ],
     'media' => [
         'type' => [
             'required' => 'Type is required.',
-            'string' => 'Type must be a string.',
-            'in' => 'Type is invalid.',
+            'string'   => 'Type must be a string.',
+            'in'       => 'Type is invalid.',
         ],
         'limit' => [
             'integer' => 'Limit must be an integer.',
-            'min' => 'Limit must be at least 1.',
-            'max' => 'Limit must not exceed 10.',
+            'min'     => 'Limit must be at least 1.',
+            'max'     => 'Limit must not exceed 10.',
         ],
     ],
     'oauth' => [
         'provider' => [
             'required' => 'Provider is required.',
-            'in' => 'Provider is invalid.',
+            'in'       => 'Provider is invalid.',
         ],
         'code' => [
             'required' => 'Code is required.',
@@ -91,8 +91,8 @@ return [
     'rss' => [
         'type' => [
             'required' => 'Type is required.',
-            'string' => 'Type must be a string.',
-            'in' => 'Type is invalid.',
+            'string'   => 'Type must be a string.',
+            'in'       => 'Type is invalid.',
         ],
         'url' => [
             'required' => 'URL is required.',
@@ -101,21 +101,48 @@ return [
     'subscription' => [
         'planId' => [
             'required' => 'Plan ID is required.',
-            'string' => 'Plan ID must be a string.',
+            'string'   => 'Plan ID must be a string.',
         ],
         'priceId' => [
             'required' => 'Price ID is required.',
-            'string' => 'Price ID must be a string.',
+            'string'   => 'Price ID must be a string.',
         ],
     ],
     'user' => [
         'name' => [
             'required' => 'Name is required.',
-            'string' => 'Name must be a string.',
+            'string'   => 'Name must be a string.',
         ],
         'email' => [
             'required' => 'Email is required.',
-            'email' => 'Email format is invalid.',
+            'email'    => 'Email format is invalid.',
+        ],
+    ],
+
+    'groq' => [
+        'status' => [
+            'required' => 'The status field is required.',
+        ],
+        'data' => [
+            'required' => 'The data field is required.',
+            'language' => [
+                'required' => 'The language field is required.',
+            ],
+            'duration' => [
+                'required' => 'The duration field is required.',
+            ],
+            'text' => [
+                'required' => 'The text field is required.',
+            ],
+            'words' => [
+                'required' => 'The words field is required.',
+            ],
+            'segments' => [
+                'required' => 'The segments field is required.',
+            ],
+            'error' => [
+                'required' => 'The error message is required.',
+            ],
         ],
     ],
 ];

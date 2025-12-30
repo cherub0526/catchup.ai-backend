@@ -19,7 +19,14 @@ class GroqValidator extends BaseValidator
         parent::__construct($params);
 
         $this->messages = [
-            'status.required' => __(''),
+            'status.required'        => __('validators.groq.status.required'),
+            'data.required'          => __('validators.groq.data.required'),
+            'data.language.required' => __('validators.groq.data.language.required'),
+            'data.duration.required' => __('validators.groq.data.duration.required'),
+            'data.text.required'     => __('validators.groq.data.text.required'),
+            'data.words.required'    => __('validators.groq.data.words.required'),
+            'data.segments.required' => __('validators.groq.data.segments.required'),
+            'data.error.required'    => __('validators.groq.data.error.required'),
         ];
     }
 
@@ -29,6 +36,8 @@ class GroqValidator extends BaseValidator
             'status' => 'required',
             'data'   => 'required',
         ];
+
+        $this->params['status'] = $this->params['status'] ?? null;
 
         if ($this->params['status'] === self::STATUS_SUCCESS) {
             $this->rules = array_merge(
