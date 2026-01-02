@@ -152,8 +152,8 @@ class SubscriptionsController extends AbstractController
     public function usage(Request $request, SubscriptionService $subscriptionService): ResponseInterface
     {
         $between = [
-            'start' => now()->startOfMonth(),
-            'end'   => now()->endOfMonth(),
+            'start' => now()->subDays(30)->startOfDay(),
+            'end'   => now()->endOfDay(),
         ];
 
         $plan = $subscriptionService->getUserSubscriptionPlan(
