@@ -34,14 +34,6 @@ class GroqController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $media->fill([
-            'status' => match ($params['status']) {
-                'success' => Media::STATUS_TRANSCRIBED,
-                'error'   => Media::STATUS_TRANSCRIBE_FAILED,
-                default   => Media::STATUS_TRANSCRIBING,
-            },
-        ])->save();
-
         if ($params['status'] === GroqValidator::STATUS_SUCCESS) {
             $locale = ISO6391::getCodeByName($params['data']['language']);
 
@@ -60,6 +52,14 @@ class GroqController extends AbstractController
                 'word_segments' => $params['data']['words'] ?? [],
             ])->save();
         }
+
+        $media->fill([
+            'status' => match ($params['status']) {
+                'success' => Media::STATUS_TRANSCRIBED,
+                'error'   => Media::STATUS_TRANSCRIBE_FAILED,
+                default   => Media::STATUS_TRANSCRIBING,
+            },
+        ])->save();
 
         return response()->make(self::RESPONSE_OK);
     }
