@@ -111,7 +111,7 @@ class SyncJob implements ShouldQueue
 
         $this->rss->users()->chunkById(100, function ($users) use ($medias, $ids) {
             $betweenDays = [
-                now()->subMonth()->startOfDay(),
+                now()->subDays(30)->startOfDay(),
                 now()->endOfDay(),
             ];
             foreach ($users as $user) {
