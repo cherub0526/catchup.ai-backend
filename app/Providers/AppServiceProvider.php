@@ -6,11 +6,9 @@ namespace App\Providers;
 
 use App\Models\Plan;
 use App\Models\User;
-use App\Models\Media;
 use App\Models\Price;
 use App\Observers\PlanObserver;
 use App\Observers\UserObserver;
-use App\Observers\MediaObserver;
 use App\Observers\PriceObserver;
 use Hypervel\Support\ServiceProvider;
 
@@ -21,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Plan::observe(PlanObserver::class);
         Price::observe(PriceObserver::class);
-        Media::observe(MediaObserver::class);
+        //        Media::observe(MediaObserver::class);
     }
 
     public function register(): void
