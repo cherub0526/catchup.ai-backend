@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Console\Commands\Media;
 
 use App\Models\Media;
-use App\Jobs\Media\InfoJob;
+use App\Services\SQSService;
 use Hypervel\Console\Command;
-use App\Jobs\Media\CaptionJob;
-use App\Jobs\Media\SummaryJob;
 
 class SyncJob extends Command
 {
+    public const string QUEUE_YOUTUBE_MP3_DOWNLOADER = 'YoutubeMp3Downloader';
+    public const string QUEUE_GROQ_TRANSCRIBE = 'GroqTranscribe';
+
     /**
      * The name and signature of the console command.
      */
@@ -33,18 +34,26 @@ class SyncJob extends Command
             Media::STATUS_TRANSCRIBED,
         ])->chunkById(100, function ($medias) {
             $medias->loadMissing(['captions']);
-
             foreach ($medias as $media) {
-                match ($media->status) {
-                    Media::STATUS_CREATED  => InfoJob::dispatch($media),
-                    Media::STATUS_PROGRESS => isset($media->audio_detail['download'])
-                        ? CaptionJob::dispatch($media)
-                        : null,
-                    Media::STATUS_TRANSCRIBED => $media->captions->first()
-                        ? SummaryJob::dispatch($media)
-                        : null,
-                    default => null,
-                };
+                $sqs = new SQSService();
+
+                switch ($media->status) {
+                    case Media::STATUS_CREATED:
+                        $sqs->push(self::QUEUE_YOUTUBE_MP3_DOWNLOADER, [
+                            'callback_url' => route(
+                                'api.v1.webhook.youtube-mp3-downloader.store',
+                                ['mediaId' => $media->id]
+                            ),
+                            'youtube_id' => $media->video_detail['yt:videoId'],
+                        ]);
+                        break;
+                    case Media::STATUS_PROGRESS:
+                        $sqs->push(self::QUEUE_GROQ_TRANSCRIBE, [
+                        ]);
+                        // no break
+                    default:
+                        break;
+                }
             }
         });
     }

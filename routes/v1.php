@@ -15,6 +15,7 @@ use App\Http\Controllers\API\V1\Webhook\PaddleController;
 use App\Http\Controllers\API\V1\Media\SummariesController;
 use App\Http\Controllers\API\V1\Auth\ForgotPasswordController;
 use App\Http\Controllers\API\V1\Subscriptions\PlansController;
+use App\Http\Controllers\API\V1\Webhook\YoutubeMp3DownloaderController;
 
 Route::group('/auth', function () {
     Route::post(
@@ -208,6 +209,14 @@ Route::group('/webhook', function () {
         [
             'as'   => 'paddle.store',
             'uses' => PaddleController::class . '@store',
+        ]
+    );
+
+    Route::post(
+        '/youtube-mp3-downloader/{mediaId}',
+        [
+            'as'   => 'youtube-mp3-downloader.store',
+            'uses' => YoutubeMp3DownloaderController::class . '@store',
         ]
     );
 
