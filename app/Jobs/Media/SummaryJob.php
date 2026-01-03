@@ -43,7 +43,7 @@ class SummaryJob implements ShouldQueue
         $caption = $this->media->captions()->where('primary', true)->first();
 
         if (!$caption) {
-            $this->media->update(['status' => Media::STATUS_SUMMARIZED]);
+            $this->media->update(['status' => Media::STATUS_SUMMARIZE_FAILED]);
             return;
         }
 
