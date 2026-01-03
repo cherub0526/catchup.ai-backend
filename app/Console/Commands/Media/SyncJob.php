@@ -32,7 +32,7 @@ class SyncJob extends Command
             Media::STATUS_PROGRESS,
             Media::STATUS_TRANSCRIBED,
         ])->chunkById(100, function ($medias) {
-            $medias->loadMissing(['cations']);
+            $medias->loadMissing(['captions']);
 
             foreach ($medias as $media) {
                 match ($media->status) {
