@@ -221,6 +221,14 @@ Route::group('/webhook', function () {
     );
 
     Route::post(
+        '/summaries/{mediaId}',
+        [
+            'as'   => 'summaries.store',
+            'uses' => App\Http\Controllers\API\V1\Webhook\SummariesController::class . '@store',
+        ]
+    );
+
+    Route::post(
         '/groq/{mediaId}',
         [
             'as'   => 'groq.store',
