@@ -60,7 +60,7 @@ class SyncJob extends Command
                         $caption = $media->captions->orderBy('primary', 'desc')->first();
 
                         $sqs->push(SQSService::QUEUE_AI_SUMMARY, [
-                            'callback_url' => route('api.v1.webhook.summary.store', ['mediaId' => $media->id]),
+                            'callback_url' => route('api.v1.webhook.summaries.store', ['mediaId' => $media->id]),
                             'data'         => [
                                 'locale' => $caption->locale,
                                 'text'   => $caption->text,
