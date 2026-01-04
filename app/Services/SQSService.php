@@ -13,6 +13,8 @@ class SQSService
     public const string QUEUE_YOUTUBE_MP3_DOWNLOADER = 'YoutubeMp3Downloader';
     public const string QUEUE_GROQ_TRANSCRIBE = 'GroqTranscribe';
 
+    public const string QUEUE_AI_SUMMARY = 'AISummary';
+
     protected SqsClient $client;
 
     public function __construct()

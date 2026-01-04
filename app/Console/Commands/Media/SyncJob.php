@@ -46,8 +46,27 @@ class SyncJob extends Command
                         break;
                     case Media::STATUS_PROGRESS:
                         $sqs->push(SQSService::QUEUE_GROQ_TRANSCRIBE, [
+                            'callback_url' => route(
+                                'api.v1.webhook.groq.store',
+                                ['mediaId' => $media->id]
+                            ),
+                            'data' => [
+                                'source'      => $media->audio_detial['link'],
+                                'destination' => sprintf('audios/%s.mp3', $media->id),
+                            ],
                         ]);
-                        // no break
+                        break;
+                    case Media::STATUS_TRANSCRIBED:
+                        $caption = $media->captions->orderBy('primary', 'desc')->first();
+
+                        $sqs->push(SQSService::QUEUE_AI_SUMMARY, [
+                            'callback_url' => route('api.v1.webhook.summary.store', ['mediaId' => $media->id]),
+                            'data'         => [
+                                'locale' => $caption->locale,
+                                'text'   => $caption->text,
+                            ],
+                        ]);
+                        break;
                     default:
                         break;
                 }
