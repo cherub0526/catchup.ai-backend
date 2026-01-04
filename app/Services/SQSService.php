@@ -10,15 +10,18 @@ use Hypervel\Support\Facades\Log;
 
 class SQSService
 {
+    public const string QUEUE_YOUTUBE_MP3_DOWNLOADER = 'YoutubeMp3Downloader';
+    public const string QUEUE_GROQ_TRANSCRIBE = 'GroqTranscribe';
+
     protected SqsClient $client;
 
     public function __construct()
     {
         $this->client = new SqsClient([
-            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-            'version' => 'latest',
+            'region'      => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'version'     => 'latest',
             'credentials' => [
-                'key' => env('AWS_ACCESS_KEY_ID'),
+                'key'    => env('AWS_ACCESS_KEY_ID'),
                 'secret' => env('AWS_SECRET_ACCESS_KEY'),
             ],
         ]);
@@ -26,10 +29,6 @@ class SQSService
 
     /**
      * Send a message to the specified SQS queue.
-     *
-     * @param string $queueName
-     * @param array $data
-     * @return string|null
      */
     public function push(string $queueName, array $data): ?string
     {
@@ -42,13 +41,13 @@ class SQSService
             }
 
             $result = $this->client->sendMessage([
-                'QueueUrl' => $queueUrl,
+                'QueueUrl'    => $queueUrl,
                 'MessageBody' => json_encode($data),
             ]);
 
             return $result->get('MessageId');
         } catch (AwsException $e) {
-            Log::error("SQS Service Error: " . $e->getMessage());
+            Log::error('SQS Service Error: ' . $e->getMessage());
             return null;
         }
     }

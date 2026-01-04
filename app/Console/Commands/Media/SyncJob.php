@@ -10,9 +10,6 @@ use Hypervel\Console\Command;
 
 class SyncJob extends Command
 {
-    public const string QUEUE_YOUTUBE_MP3_DOWNLOADER = 'YoutubeMp3Downloader';
-    public const string QUEUE_GROQ_TRANSCRIBE = 'GroqTranscribe';
-
     /**
      * The name and signature of the console command.
      */
@@ -39,7 +36,7 @@ class SyncJob extends Command
 
                 switch ($media->status) {
                     case Media::STATUS_CREATED:
-                        $sqs->push(self::QUEUE_YOUTUBE_MP3_DOWNLOADER, [
+                        $sqs->push(SQSService::QUEUE_YOUTUBE_MP3_DOWNLOADER, [
                             'callback_url' => route(
                                 'api.v1.webhook.youtube-mp3-downloader.store',
                                 ['mediaId' => $media->id]
@@ -48,7 +45,7 @@ class SyncJob extends Command
                         ]);
                         break;
                     case Media::STATUS_PROGRESS:
-                        $sqs->push(self::QUEUE_GROQ_TRANSCRIBE, [
+                        $sqs->push(SQSService::QUEUE_GROQ_TRANSCRIBE, [
                         ]);
                         // no break
                     default:
