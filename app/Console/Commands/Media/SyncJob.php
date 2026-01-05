@@ -51,7 +51,7 @@ class SyncJob extends Command
                                 ['mediaId' => $media->id]
                             ),
                             'data' => [
-                                'source'      => $media->audio_detial['link'],
+                                'source'      => $media->audio_detail['link'],
                                 'destination' => sprintf('audios/%s.mp3', $media->id),
                             ],
                         ]);
