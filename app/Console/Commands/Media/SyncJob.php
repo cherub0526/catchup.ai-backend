@@ -30,7 +30,11 @@ class SyncJob extends Command
             Media::STATUS_PROGRESS,
             Media::STATUS_TRANSCRIBED,
         ])->chunkById(100, function ($medias) {
-            $medias->loadMissing(['captions']);
+            $medias->loadMissing([
+                'captions' => function ($builder) {
+                    $builder->orderBy('primary', 'desc');
+                },
+            ]);
             foreach ($medias as $media) {
                 $sqs = new SQSService();
 
@@ -45,6 +49,10 @@ class SyncJob extends Command
                         ]);
                         break;
                     case Media::STATUS_PROGRESS:
+                        if (!isset($media->audio_detail['link'])) {
+                            break;
+                        }
+
                         $sqs->push(SQSService::QUEUE_GROQ_TRANSCRIBE, [
                             'callback_url' => route(
                                 'api.v1.webhook.groq.store',
@@ -55,9 +63,13 @@ class SyncJob extends Command
                                 'destination' => sprintf('audios/%s.mp3', $media->id),
                             ],
                         ]);
+
                         break;
                     case Media::STATUS_TRANSCRIBED:
-                        $caption = $media->captions->orderBy('primary', 'desc')->first();
+                        if ($media->captions->count() === 0) {
+                            break;
+                        }
+                        $caption = $media->captions->first();
 
                         $sqs->push(SQSService::QUEUE_AI_SUMMARY, [
                             'callback_url' => route('api.v1.webhook.summaries.store', ['mediaId' => $media->id]),
