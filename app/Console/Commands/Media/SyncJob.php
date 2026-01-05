@@ -30,11 +30,6 @@ class SyncJob extends Command
             Media::STATUS_PROGRESS,
             Media::STATUS_TRANSCRIBED,
         ])->chunkById(100, function ($medias) {
-            $medias->loadMissing([
-                'captions' => function ($builder) {
-                    $builder->orderBy('primary', 'desc');
-                },
-            ]);
             foreach ($medias as $media) {
                 $sqs = new SQSService();
 
@@ -66,10 +61,9 @@ class SyncJob extends Command
 
                         break;
                     case Media::STATUS_TRANSCRIBED:
-                        if ($media->captions->count() === 0) {
+                        if (!$caption = $media->captions()->orderBy('primary', 'desc')->first()) {
                             break;
                         }
-                        $caption = $media->captions->first();
 
                         $sqs->push(SQSService::QUEUE_AI_SUMMARY, [
                             'callback_url' => route('api.v1.webhook.summaries.store', ['mediaId' => $media->id]),
