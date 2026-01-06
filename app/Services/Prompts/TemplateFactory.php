@@ -16,11 +16,11 @@ class TemplateFactory
      * @var array 註冊的模板類別映射
      */
     private static array $templates = [
-        'assistant' => AssistantTemplate::class,
-        'summary' => SummaryTemplate::class,
+        'assistant'   => AssistantTemplate::class,
+        'summary'     => SummaryTemplate::class,
         'translation' => TranslationTemplate::class,
-        'caption' => CaptionTemplate::class,
-        'analysis' => AnalysisTemplate::class,
+        'caption'     => CaptionTemplate::class,
+        'analysis'    => AnalysisTemplate::class,
     ];
 
     /**
@@ -32,7 +32,7 @@ class TemplateFactory
      */
     public static function create(string $type, array $parameters = []): TemplateInterface
     {
-        if (! isset(self::$templates[$type])) {
+        if (!isset(self::$templates[$type])) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Unknown template type: %s. Available types: %s',
@@ -54,7 +54,7 @@ class TemplateFactory
      */
     public static function register(string $type, string $className): void
     {
-        if (! is_subclass_of($className, TemplateInterface::class)) {
+        if (!is_subclass_of($className, TemplateInterface::class)) {
             throw new InvalidArgumentException(
                 sprintf('%s must implement %s', $className, TemplateInterface::class)
             );

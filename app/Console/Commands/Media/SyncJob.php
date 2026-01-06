@@ -32,9 +32,9 @@ class SyncJob extends Command
         ])->chunkById(100, function ($medias) {
             foreach ($medias as $media) {
                 $sqs = new SQSService();
-
                 switch ($media->status) {
                     case Media::STATUS_CREATED:
+                        $media->update(['status' => Media::STATUS_PROGRESS]);
                         $sqs->push(SQSService::QUEUE_YOUTUBE_MP3_DOWNLOADER, [
                             'callback_url' => route(
                                 'api.v1.webhook.youtube-mp3-downloader.store',
@@ -47,7 +47,7 @@ class SyncJob extends Command
                         if (!isset($media->audio_detail['link'])) {
                             break;
                         }
-
+                        $media->update(['status' => Media::STATUS_TRANSCRIBING]);
                         $sqs->push(SQSService::QUEUE_GROQ_TRANSCRIBE, [
                             'callback_url' => route(
                                 'api.v1.webhook.groq.store',
@@ -64,7 +64,7 @@ class SyncJob extends Command
                         if (!$caption = $media->captions()->orderBy('primary', 'desc')->first()) {
                             break;
                         }
-
+                        $media->update(['status' => Media::STATUS_SUMMARIZING]);
                         $sqs->push(SQSService::QUEUE_AI_SUMMARY, [
                             'callback_url' => route('api.v1.webhook.summaries.store', ['mediaId' => $media->id]),
                             'data'         => [
