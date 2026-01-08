@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('rss:sync')->dailyAt('00:00')->onOneServer();
 
-        $schedule->command('media:sync-job')->everyThirtySeconds();
+        $schedule->command('media:sync-job')->everyThirtySeconds()->onOneServer();
     }
 
     public function commands(): void
