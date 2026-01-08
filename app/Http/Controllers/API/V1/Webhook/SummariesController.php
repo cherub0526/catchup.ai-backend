@@ -36,6 +36,8 @@ class SummariesController extends AbstractController
 
         $summary->fill(['text' => $params['text']])->save();
 
+        $media->fill(['status' => Media::STATUS_SUMMARIZED])->save();
+
         return response()->make(self::RESPONSE_OK);
     }
 }
