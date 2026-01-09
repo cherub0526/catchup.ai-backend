@@ -21,7 +21,6 @@
     "hypervel/redis": "^0.3",
     "hypervel/socialite": "^0.3.8",
     "league/flysystem-aws-s3-v3": "^3.0",
-    "lucianotonet/groq-php": "dev-main",
     "paddlehq/paddle-php-sdk": "^1.14",
     "php-http/guzzle7-adapter": "^1.1"
   },
@@ -88,11 +87,5 @@
       "Composer\\Config::disableProcessTimeout",
       "php artisan start"
     ]
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/cherub0526/groq-php.git"
-    }
-  ]
+  }
 }
