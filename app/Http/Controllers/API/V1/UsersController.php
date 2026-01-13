@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\V1;
 
+use Hypervel\Http\Request;
+use App\Validators\UserValidator;
+use App\Http\Resources\UserResource;
+use Psr\Http\Message\ResponseInterface;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\AbstractController;
-use App\Http\Resources\UserResource;
-use App\Validators\UserValidator;
-use Hypervel\Http\Request;
 
 class UsersController extends AbstractController
 {
@@ -30,14 +31,14 @@ class UsersController extends AbstractController
     /**
      * @throws InvalidRequestException
      */
-    public function update(Request $request): \Psr\Http\Message\ResponseInterface
+    public function update(Request $request): ResponseInterface
     {
         $params = $request->only(['name', 'email']);
 
         $v = new UserValidator($params);
         $v->setUpdateRules();
 
-        if (! $v->passes()) {
+        if (!$v->passes()) {
             throw new InvalidRequestException($v->errors()->toArray());
         }
 

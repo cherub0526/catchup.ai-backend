@@ -14,6 +14,7 @@ use Paddle\SDK\Exceptions\ApiError;
 use App\Http\Resources\PlanResource;
 use App\Services\SubscriptionService;
 use Psr\Http\Message\ResponseInterface;
+use App\Exceptions\NotFoundHttpException;
 use App\Validators\SubscriptionValidator;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\AbstractController;
@@ -145,8 +146,16 @@ class SubscriptionsController extends AbstractController
     /**
      * 取消訂閱.
      */
-    public function destroy(Request $request, string $subscriptionId)
+    public function destroy(Request $request, SubscriptionService $subscriptionService)
     {
+        if (!$subscription = $subscriptionService->getUserSubscription($request->user()->id)) {
+            throw new NotFoundHttpException();
+        }
+
+        $paddle = new PaddleClient();
+        $paddle->subscriptions()->cancel($subscription->paddle->paddle_id);
+
+        return response()->make(self::RESPONSE_OK);
     }
 
     public function usage(Request $request, SubscriptionService $subscriptionService): ResponseInterface

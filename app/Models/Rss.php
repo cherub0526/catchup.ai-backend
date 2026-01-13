@@ -49,7 +49,7 @@ class Rss extends Model
             'userables',
             'rss_id',
             'user_id'
-        )->withTimestamps();
+        )->wherePivot('media_id', null)->withTimestamps();
     }
 
     public function syncHistories(): HasMany
