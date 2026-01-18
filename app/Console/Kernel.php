@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console;
 
+use App\Console\Commands\Rss\Sync;
+use App\Console\Commands\Media\SyncJob;
 use Hypervel\Console\Scheduling\Schedule;
 use Hypervel\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,9 +16,9 @@ class Kernel extends ConsoleKernel
      */
     public function schedule(Schedule $schedule): void
     {
-        $schedule->command('rss:sync')->dailyAt('00:00')->onOneServer();
+        $schedule->call(Sync::class)->dailyAt('00:00')->onOneServer();
 
-        $schedule->command('media:sync-job')->everyMinute()->onOneServer();
+        $schedule->call(SyncJob::class)->everyMinute()->onOneServer();
     }
 
     public function commands(): void
