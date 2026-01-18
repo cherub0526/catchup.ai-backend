@@ -30,8 +30,8 @@ class SyncJob extends Command
             Media::STATUS_PROGRESS,
             Media::STATUS_TRANSCRIBED,
         ])->chunkById(100, function ($medias) {
+            $sqs = new SQSService();
             foreach ($medias as $media) {
-                $sqs = new SQSService();
                 switch ($media->status) {
                     case Media::STATUS_CREATED:
                         $media->update(['status' => Media::STATUS_PROGRESS]);
