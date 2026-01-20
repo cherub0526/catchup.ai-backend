@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YouTube Video Player</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+      margin: 0;
+      padding: 0;
+    }
+
+    #youtube-player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* YouTube API 會在 #youtube-player 中創建 iframe */
+    #youtube-player iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .error-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      text-align: center;
+      font-size: 1.125rem;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 8px;
+      z-index: 10;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <!-- YouTube Player 容器 -->
+    <div id="youtube-player"></div>
+    
+    <!-- 錯誤訊息顯示 -->
+    <div id="error-message" class="error-message hidden">
+      請提供影片 ID (例如: ?v=tenJHEIcZw0)
+    </div>
+  </div>
+
+  <script>
+    // 全局變數
+    let player = null;
+    let playerReady = false;
+    let videoId = '';
+    let statusUpdateInterval = null;
+
+    // 從 URL 參數中獲取影片 ID
+    function getVideoIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('v') || '';
+    }
+
+    // 載入 YouTube IFrame API
+    function loadYouTubeAPI() {
+      return new Promise((resolve) => {
+        // 檢查是否已經載入
+        if (window.YT && window.YT.Player) {
+          resolve();
+          return;
+        }
+
+        // 創建 script 標籤
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // 設置全局回調
+        window.onYouTubeIframeAPIReady = () => {
+          resolve();
+        };
+      });
+    }
+
+    // 創建 YouTube Player
+    async function createYouTubePlayer() {
+      videoId = getVideoIdFromUrl();
+      
+      const errorMessage = document.getElementById('error-message');
+      
+      if (!videoId) {
+        console.error('沒有提供影片 ID');
+        errorMessage.classList.remove('hidden');
+        return;
+      }
+
+      errorMessage.classList.add('hidden');
+
+      try {
+        // 等待 API 載入
+        await loadYouTubeAPI();
+
+        // 銷毀舊的播放器
+        if (player) {
+          player.destroy();
+          player = null;
+        }
+
+        // 創建新的播放器
+        player = new YT.Player('youtube-player', {
+          videoId: videoId,
+          width: '100%',
+          height: '100%',
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            modestbranding: 1,
+            rel: 0,
+            enablejsapi: 1,
+            origin: window.location.origin
+          },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+            onError: onPlayerError
+          }
+        });
+      } catch (error) {
+        console.error('創建 YouTube 播放器失敗:', error);
+      }
+    }
+
+    // 播放器就緒事件
+    function onPlayerReady(event) {
+      console.log('YouTube 播放器已就緒');
+      playerReady = true;
+      
+      // 通知父頁面播放器已就緒
+      sendMessageToParent({
+        type: 'playerReady',
+        data: {
+          videoId: videoId,
+          duration: player.getDuration()
+        }
+      });
+
+      // 開始定時發送播放狀態
+      startStatusUpdate();
+    }
+
+    // 播放器狀態變化事件
+    function onPlayerStateChange(event) {
+      const states = {
+        '-1': 'unstarted',
+        '0': 'ended',
+        '1': 'playing',
+        '2': 'paused',
+        '3': 'buffering',
+        '5': 'cued'
+      };
+
+      const state = states[event.data] || 'unknown';
+      console.log('播放器狀態變化:', state);
+
+      // 通知父頁面狀態變化
+      sendMessageToParent({
+        type: 'stateChange',
+        data: {
+          state: state,
+          stateCode: event.data,
+          currentTime: player.getCurrentTime(),
+          duration: player.getDuration()
+        }
+      });
+    }
+
+    // 播放器錯誤事件
+    function onPlayerError(event) {
+      console.error('YouTube 播放器錯誤:', event.data);
+      
+      sendMessageToParent({
+        type: 'error',
+        data: {
+          errorCode: event.data
+        }
+      });
+    }
+
+    // 發送訊息給父頁面
+    function sendMessageToParent(message) {
+      if (window.parent !== window) {
+        window.parent.postMessage(message, '*');
+      }
+    }
+
+    // 定時發送播放狀態
+    function startStatusUpdate() {
+      if (statusUpdateInterval) {
+        clearInterval(statusUpdateInterval);
+      }
+
+      statusUpdateInterval = setInterval(() => {
+        if (player && playerReady) {
+          try {
+            const state = player.getPlayerState();
+            // 只在播放時發送更新
+            if (state === 1) {
+              sendMessageToParent({
+                type: 'timeUpdate',
+                data: {
+                  currentTime: player.getCurrentTime(),
+                  duration: player.getDuration()
+                }
+              });
+            }
+          } catch (error) {
+            console.error('獲取播放狀態失敗:', error);
+          }
+        }
+      }, 1000); // 每秒更新一次
+    }
+
+    // 處理來自父頁面的訊息
+    function handleMessage(event) {
+      // 安全檢查：可以根據需要限制來源
+      // if (event.origin !== 'expected-origin') return;
+
+      const { type, data } = event.data;
+
+      if (!player || !playerReady) {
+        console.warn('播放器尚未就緒');
+        return;
+      }
+
+      try {
+        switch (type) {
+          case 'play':
+            player.playVideo();
+            break;
+          
+          case 'pause':
+            player.pauseVideo();
+            break;
+          
+          case 'seekTo':
+            if (typeof data.time === 'number') {
+              player.seekTo(data.time, true);
+            }
+            break;
+          
+          case 'setVolume':
+            if (typeof data.volume === 'number') {
+              player.setVolume(data.volume);
+            }
+            break;
+          
+          case 'mute':
+            player.mute();
+            break;
+          
+          case 'unmute':
+            player.unMute();
+            break;
+          
+          case 'getState':
+            // 回傳當前狀態
+            sendMessageToParent({
+              type: 'stateResponse',
+              data: {
+                state: player.getPlayerState(),
+                currentTime: player.getCurrentTime(),
+                duration: player.getDuration(),
+                volume: player.getVolume(),
+                isMuted: player.isMuted()
+              }
+            });
+            break;
+          
+          default:
+            console.warn('未知的訊息類型:', type);
+        }
+      } catch (error) {
+        console.error('處理訊息時發生錯誤:', error);
+        sendMessageToParent({
+          type: 'error',
+          data: {
+            message: error.message
+          }
+        });
+      }
+    }
+
+    // 頁面載入時執行
+    window.addEventListener('DOMContentLoaded', () => {
+      // 監聽來自父頁面的訊息
+      window.addEventListener('message', handleMessage);
+      
+      // 創建播放器
+      createYouTubePlayer();
+    });
+
+    // 清理
+    window.addEventListener('beforeunload', () => {
+      if (statusUpdateInterval) {
+        clearInterval(statusUpdateInterval);
+      }
+      
+      if (player) {
+        player.destroy();
+      }
+      
+      window.removeEventListener('message', handleMessage);
+    });
+  </script>
+</body>
+</html>
