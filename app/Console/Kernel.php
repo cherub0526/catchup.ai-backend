@@ -16,9 +16,11 @@ class Kernel extends ConsoleKernel
      */
     public function schedule(Schedule $schedule): void
     {
-        $schedule->call(Sync::class)->dailyAt('00:00')->onOneServer();
+        $schedule->call(Sync::class)->dailyAt('00:00')
+            ->name('rss.sync')->onOneServer();
 
-        $schedule->call(SyncJob::class)->everyMinute()->onOneServer();
+        $schedule->call(SyncJob::class)->everyMinute()
+            ->name('media.sync-job')->onOneServer();
     }
 
     public function commands(): void
