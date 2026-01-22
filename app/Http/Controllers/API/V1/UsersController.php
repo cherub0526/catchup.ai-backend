@@ -15,7 +15,7 @@ class UsersController extends AbstractController
 {
     public function index(Request $request): UserResource
     {
-        return new UserResource($request->user());
+        return new UserResource($request->user()->load(['setting']));
     }
 
     public function store(Request $request): UserResource

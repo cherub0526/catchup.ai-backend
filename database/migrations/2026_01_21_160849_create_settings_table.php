@@ -31,8 +31,10 @@ return new class extends BaseMigration {
                     'user_id' => $user->id,
                     'data'    => json_encode(
                         [
-                            'lang'        => ISO6391::getCodeByName('English'),
-                            'prompt_lang' => ISO6391::getCodeByName('English'),
+                            'locale' => ISO6391::getCodeByName('English'),
+                            'ai'     => [
+                                'language' => ISO6391::getCodeByName('English'),
+                            ],
                         ]
                     ),
                     'created_at' => now(),

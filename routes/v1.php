@@ -7,6 +7,7 @@ use App\Http\Controllers\API\V1\RSSController;
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\MediaController;
 use App\Http\Controllers\API\V1\UsersController;
+use App\Http\Controllers\API\V1\SettingsController;
 use App\Http\Controllers\API\V1\Media\ChatController;
 use App\Http\Controllers\API\V1\Webhook\GroqController;
 use App\Http\Controllers\API\V1\SubscriptionsController;
@@ -71,6 +72,17 @@ Route::group('/users', function () {
         'middleware' => ['auth'],
     ]);
 }, ['as' => 'users']);
+
+Route::group('/settings', function () {
+    Route::put(
+        '/',
+        [
+            'as'         => 'update',
+            'uses'       => SettingsController::class . '@update',
+            'middleware' => ['auth'],
+        ]
+    );
+}, ['as' => 'settings']);
 
 Route::group('/rss', function () {
     Route::get(

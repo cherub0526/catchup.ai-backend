@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'name'    => strval($this->resource->name),
             'email'   => strval($this->resource->email),
             'account' => strval($this->resource->account),
+            'setting' => new SettingResource($this->whenLoaded('setting')),
         ];
     }
 }
