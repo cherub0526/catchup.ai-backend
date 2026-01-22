@@ -14,7 +14,7 @@ class SettingsController extends AbstractController
     /**
      * @throws InvalidRequestException
      */
-    public function store(Request $request)
+    public function update(Request $request)
     {
         $params = $request->only(['ai']);
 
@@ -25,8 +25,10 @@ class SettingsController extends AbstractController
             throw new InvalidRequestException($v->errors()->toArray());
         }
 
-        $request->user()->setting()->update([
-            'data' => array_merge($request->setting()->first()->data, $params),
+        $setting = $request->user()->setting()->first();
+
+        $setting->update([
+            'data' => array_merge($setting->data, $params),
         ]);
 
         return response()->make(self::RESPONSE_OK);
