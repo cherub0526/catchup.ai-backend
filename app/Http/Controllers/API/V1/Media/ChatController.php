@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\V1\Media;
 
 use Hypervel\Http\Request;
+use App\Utils\Const\ISO6391;
 use App\Utils\OpenAI\Completion;
 use App\Validators\ChatValidator;
 use Psr\Http\Message\ResponseInterface;
@@ -37,8 +38,9 @@ class ChatController
         $userMessage = collect($params['messages'])->last()['content'] ?? '';
 
         $template = TemplateFactory::create('assistant', [
-            'user_prompt' => $media->captions()->orderByDesc('primary')->first()->text ?? '',
-            'messages'    => array_pop($params['messages']),
+            'user_prompt'      => $media->captions()->orderByDesc('primary')->first()->text ?? '',
+            'messages'         => array_pop($params['messages']),
+            'respond_language' => ISO6391::getNameByCode($request->user()->setting()->first()->data['ai']['language']),
         ]);
         $openai = new TemplateCompletionManager($completion, $template);
         $response = $openai->complete($userMessage, 'gpt-4.1-mini');
