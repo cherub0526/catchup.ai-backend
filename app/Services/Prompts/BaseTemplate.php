@@ -62,9 +62,9 @@ abstract class BaseTemplate implements TemplateInterface
 
         // 新增系統提示詞
         $systemPrompt = $this->getSystemPrompt();
-        if (! empty($systemPrompt)) {
+        if (!empty($systemPrompt)) {
             $messages[] = [
-                'role' => 'system',
+                'role'    => 'system',
                 'content' => $systemPrompt,
             ];
         }
@@ -73,7 +73,7 @@ abstract class BaseTemplate implements TemplateInterface
             foreach ($additionalParams['messages'] as $history) {
                 if (isset($history['role'], $history['content'])) {
                     $messages[] = [
-                        'role' => $history['role'],
+                        'role'    => $history['role'],
                         'content' => $history['content'],
                     ];
                 }
@@ -82,14 +82,19 @@ abstract class BaseTemplate implements TemplateInterface
 
         // 新增使用者提示詞
         $userPrompt = $this->getUserPrompt();
-        if (! empty($userPrompt)) {
+        if (!empty($userPrompt)) {
             $messages[] = [
-                'role' => 'user',
-                'content' => $userPrompt . "\n\n" . $userContent,
+                'role'    => 'user',
+                'content' => $userPrompt,
+            ];
+
+            $messages[] = [
+                'role'    => 'user',
+                'content' => $userContent,
             ];
         } else {
             $messages[] = [
-                'role' => 'user',
+                'role'    => 'user',
                 'content' => $userContent,
             ];
         }
