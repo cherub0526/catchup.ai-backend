@@ -8,6 +8,7 @@ use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\MediaController;
 use App\Http\Controllers\API\V1\UsersController;
 use App\Http\Controllers\API\V1\SettingsController;
+use App\Http\Controllers\API\V1\FeedbacksController;
 use App\Http\Controllers\API\V1\Media\ChatController;
 use App\Http\Controllers\API\V1\Webhook\GroqController;
 use App\Http\Controllers\API\V1\SubscriptionsController;
@@ -17,6 +18,13 @@ use App\Http\Controllers\API\V1\Media\SummariesController;
 use App\Http\Controllers\API\V1\Auth\ForgotPasswordController;
 use App\Http\Controllers\API\V1\Subscriptions\PlansController;
 use App\Http\Controllers\API\V1\Webhook\YoutubeMp3DownloaderController;
+
+Route::group('/feedbacks', function () {
+    Route::post('/', [
+        'as'   => 'store',
+        'uses' => FeedbacksController::class . '@store',
+    ]);
+}, ['as' => 'feedbacks', 'middleware' => ['auth']]);
 
 Route::group('/auth', function () {
     Route::post(

@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Hypervel\Database\Eloquent\SoftDeletes;
+use Hyperf\Database\Model\Relations\HasMany;
+use Hypervel\Database\Eloquent\Concerns\HasUlids;
+
+class Feedback extends Model
+{
+    use HasUlids;
+
+    use SoftDeletes;
+
+    public const string STATUS_CREATED = 'created';
+    public const string STATUS_SOLVED = 'solved';
+
+    protected ?string $table = 'feedbacks';
+    /**
+     * The attributes that are mass assignable.
+     */
+    protected array $fillable = [
+        'content',
+        'status',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     */
+    protected array $casts = [];
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'foreign_id', 'id')
+            ->where('foreign_type', self::class);
+    }
+}
