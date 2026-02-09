@@ -17,6 +17,7 @@
     "ext-simplexml": "*",
     "barryvdh/laravel-ide-helper": "^3.6",
     "friendsofhyperf/tinker": "~3.1.0",
+    "google/apiclient": "^2.19",
     "hypervel/framework": "^0.3",
     "hypervel/redis": "^0.3",
     "hypervel/socialite": "^0.3.8",

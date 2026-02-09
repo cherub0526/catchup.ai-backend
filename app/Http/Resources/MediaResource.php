@@ -16,13 +16,14 @@ class MediaResource extends JsonResource
     public function toArray(): array
     {
         return [
-            'id'           => strval($this->resource->id),
-            'url'          => strval('https://www.youtube.com/embed/' . $this->resource->video_detail['yt:videoId']),
-            'type'         => strval($this->resource->type),
-            'title'        => strval($this->resource->title),
-            'description'  => strval($this->resource->description),
-            'thumbnail'    => strval($this->resource->thumbnail),
-            'published_at' => strval($this->resource->published_at),
+            'id'            => strval($this->resource->id),
+            'url'           => strval('https://www.youtube.com/embed/' . $this->resource->video_detail['yt:videoId']),
+            'type'          => strval($this->resource->type),
+            'title'         => strval($this->resource->title),
+            'description'   => strval($this->resource->description),
+            'thumbnail'     => strval($this->resource->thumbnail),
+            'published_at'  => strval($this->resource->published_at),
+            'short_summary' => $this->resource->summary ? $this->resource->summary->text['short_summary'] : '',
             //            'author'       => $this->whenLoaded('rss', function () {
             //                return match ($this->resource->type) {
             //                    Media::TYPE_YOUTUBE => $this->youtube(),

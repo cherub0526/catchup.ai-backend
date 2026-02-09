@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Hyperf\Database\Model\SoftDeletes;
+use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hypervel\Database\Eloquent\Concerns\HasUlids;
 use Hyperf\Database\Model\Relations\BelongsToMany;
@@ -97,6 +98,11 @@ class Media extends Model
     public function captions(): HasMany
     {
         return $this->hasMany(Caption::class, 'media_id', 'id');
+    }
+
+    public function summary(): HasOne
+    {
+        return $this->hasOne(Summary::class, 'media_id', 'id')->orderBy('created_at', 'desc');
     }
 
     public function summaries(): HasMany
