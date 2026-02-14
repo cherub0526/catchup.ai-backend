@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Exception;
 use Google\Client;
 use Google\Service\YouTube;
-use InvalidArgumentException;
 
 class YoutubeService
 {
@@ -28,13 +28,12 @@ class YoutubeService
      * - https://www.youtube.com/user/Username
      * - https://www.youtube.com/@Handle
      *
-     * @param string $url
-     * @return string|null Channel ID or null if not found
+     * @return null|string Channel ID or null if not found
      */
     public function getChannelIdFromUrl(string $url): ?string
     {
         $parsedUrl = parse_url($url);
-        if (! isset($parsedUrl['path'])) {
+        if (!isset($parsedUrl['path'])) {
             return null;
         }
 
@@ -73,10 +72,10 @@ class YoutubeService
         try {
             $response = $this->youtube->channels->listChannels('id', ['forHandle' => $handle]);
             $items = $response->getItems();
-            if (! empty($items)) {
+            if (!empty($items)) {
                 return $items[0]->getId();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log error or handle gracefully
         }
 
@@ -87,16 +86,16 @@ class YoutubeService
     {
         try {
             $response = $this->youtube->search->listSearch('snippet', [
-                'q' => $query,
-                'type' => 'channel',
+                'q'          => $query,
+                'type'       => 'channel',
                 'maxResults' => 1,
             ]);
 
             $items = $response->getItems();
-            if (! empty($items)) {
+            if (!empty($items)) {
                 return $items[0]->getSnippet()->getChannelId();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log error or handle gracefully
         }
 

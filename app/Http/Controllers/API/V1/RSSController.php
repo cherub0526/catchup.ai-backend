@@ -7,6 +7,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Models\Rss;
 use App\Jobs\Rss\SyncJob;
 use Hypervel\Http\Request;
+use App\Services\YoutubeService;
 use App\Validators\RSSValidator;
 use App\Http\Resources\RSSResource;
 use Psr\Http\Message\ResponseInterface;
@@ -51,7 +52,8 @@ class RSSController extends AbstractController
         }
 
         if ($params['type'] === Rss::TYPE_YOUTUBE) {
-            $params['url'] = 'https://www.youtube.com/feeds/videos.xml?channel_id=' . $params['url'];
+            $channelId = (new YoutubeService())->getChannelIdFromUrl($params['url']);
+            $params['url'] = 'https://www.youtube.com/feeds/videos.xml?channel_id=' . $channelId;
         }
 
         $xml = @simplexml_load_file($params['url']);

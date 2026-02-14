@@ -16,11 +16,12 @@ class TemplateFactory
      * @var array 註冊的模板類別映射
      */
     private static array $templates = [
-        'assistant'   => AssistantTemplate::class,
-        'summary'     => SummaryTemplate::class,
-        'translation' => TranslationTemplate::class,
-        'caption'     => CaptionTemplate::class,
-        'analysis'    => AnalysisTemplate::class,
+        'assistant'    => AssistantTemplate::class,
+        'summary'      => SummaryTemplate::class,
+        'translation'  => TranslationTemplate::class,
+        'caption'      => CaptionTemplate::class,
+        'analysis'     => AnalysisTemplate::class,
+        'customPrompt' => CustomPromptTemplate::class,
     ];
 
     /**
