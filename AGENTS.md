@@ -17,18 +17,54 @@ for YouTube content, with Paddle subscription management.
 - Paddle subscription management with webhook handling
 - OAuth authentication (local, Facebook, Google) with JWT tokens
 
+## Development Environment
+
+This project runs in a **Docker Compose** environment. All commands must be executed inside the Docker container.
+
+**Command prefix pattern:**
+```bash
+docker compose exec hypervel {your-command}
+```
+
+**Examples:**
+```bash
+# Run PHP artisan commands
+docker compose exec hypervel php artisan migrate
+
+# Run composer commands
+docker compose exec hypervel composer install
+
+# Run PHPUnit tests
+docker compose exec hypervel vendor/bin/phpunit
+```
+
+**Container management:**
+```bash
+# Start containers
+docker compose up -d
+
+# Stop containers
+docker compose down
+
+# View logs
+docker compose logs -f hypervel
+
+# Access container shell
+docker compose exec hypervel bash
+```
+
 ## Development Commands
 
 ### Server Management
 
 ```bash
 # Start the development server (blocking, keeps running until stopped)
-composer start
+docker compose exec hypervel composer start
 # or
-php artisan start
+docker compose exec hypervel php artisan start
 
 # Start with file watching (auto-reload on code changes)
-php artisan server:watch
+docker compose exec hypervel php artisan server:watch
 
 # Server runs on HTTP_SERVER_HOST:HTTP_SERVER_PORT (default: 0.0.0.0:9501)
 ```
@@ -37,65 +73,65 @@ php artisan server:watch
 
 ```bash
 # Run migrations
-php artisan migrate
+docker compose exec hypervel php artisan migrate
 
 # Rollback migrations
-php artisan migrate:rollback
+docker compose exec hypervel php artisan migrate:rollback
 
 # Fresh migration (drop all tables and re-migrate)
-php artisan migrate:fresh
+docker compose exec hypervel php artisan migrate:fresh
 
 # Seed database
-php artisan db:seed
+docker compose exec hypervel php artisan db:seed
 ```
 
 ### Queue Workers
 
 ```bash
 # Start queue worker (processes default queue)
-php artisan queue:work
+docker compose exec hypervel php artisan queue:work
 
 # Process specific queue
-php artisan queue:work --queue=media.caption
-php artisan queue:work --queue=media.info
+docker compose exec hypervel php artisan queue:work --queue=media.caption
+docker compose exec hypervel php artisan queue:work --queue=media.info
 ```
 
 ### Testing
 
 ```bash
 # Run all tests
-composer test
+docker compose exec hypervel composer test
 # or
-vendor/bin/phpunit
+docker compose exec hypervel vendor/bin/phpunit
 
 # Run specific test file
-vendor/bin/phpunit tests/Feature/ExampleTest.php
+docker compose exec hypervel vendor/bin/phpunit tests/Feature/ExampleTest.php
 
 # Run specific test method
-vendor/bin/phpunit --filter testExample
+docker compose exec hypervel vendor/bin/phpunit --filter testExample
 ```
 
 ### Code Quality
 
 ```bash
 # Fix code style for modified files (vs origin/main)
-composer cs-diff
+docker compose exec hypervel composer cs-diff
 
 # Fix code style for specific file
-composer cs-fix app/Models/User.php
+docker compose exec hypervel composer cs-fix app/Models/User.php
 
 # Run static analysis (PHPStan)
-composer analyse
+docker compose exec hypervel composer analyse
 ```
 
 ### RSS Synchronization
 
 ```bash
 # Sync all RSS feeds (fetches new videos from subscribed channels)
-php artisan rss:sync
+docker compose exec hypervel php artisan rss:sync
 
 # Sync specific RSS feed by ID
-php artisan rss:sync --id=1
+docker compose exec hypervel php artisan rss:sync --id=1
 ```
 
 ## Framework-Specific Notes
@@ -261,6 +297,69 @@ All routes in `routes/v1.php`:
 **Webhooks** (public)
 
 - `POST /webhook/paddle` - Paddle webhook handler
+
+### OpenAPI Documentation Structure
+
+The API documentation uses OpenAPI 3.x specification with PHP 8 Attributes. All OpenAPI definitions are in `app/OpenApi/`:
+
+**Directory Structure:**
+
+```
+app/OpenApi/
+├── Info.php             - API metadata (version, title, description)
+├── Server.php           - Server configurations (local, production)
+├── Parameters/          - Reusable parameter definitions
+│   ├── Header/         - HTTP header parameters (e.g., Authorization)
+│   ├── Path/           - URL path parameters (e.g., {id})
+│   └── Query/          - Query string parameters (e.g., ?page=1)
+├── Responses/          - Reusable response definitions
+└── Schemas/            - Data model schemas (request/response bodies)
+```
+
+**Naming Convention:**
+
+When referencing OpenAPI components, use dot notation based on directory structure:
+
+- Header parameter: `Header.Authorization` (file: `Parameters/Header/Authorization.php`)
+- Path parameter: `Path.Id` (file: `Parameters/Path/Id.php`)
+- Query parameter: `Query.Page` (file: `Parameters/Query/Page.php`)
+- Response: `Response.Success` (file: `Responses/Success.php`)
+- Schema: `Schema.User` (file: `Schemas/User.php`)
+
+**Usage in Controllers:**
+
+```php
+use OpenApi\Attributes as OAT;
+use App\OpenApi\Parameters\Header;
+
+#[OAT\Get(
+    path: '/api/v1/users/{id}',
+    parameters: [
+        new OAT\Parameter(ref: Header\Authorization::class),
+        new OAT\Parameter(ref: Path\Id::class),
+    ]
+)]
+public function show(string $id): ResponseInterface
+{
+    // Implementation
+}
+```
+
+**Component Files:**
+
+Each component file uses PHP 8 Attributes with OpenAPI annotations:
+
+```php
+// app/OpenApi/Parameters/Header/Authorization.php
+#[OAT\Parameter(
+    name: 'Authorization',
+    in: 'header',
+    required: true,
+    description: 'Bearer token for authentication',
+    schema: new OAT\Schema(type: 'string', example: 'Bearer {token}')
+)]
+class Authorization {}
+```
 
 ### Validation Pattern
 

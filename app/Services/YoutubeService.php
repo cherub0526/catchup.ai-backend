@@ -67,6 +67,77 @@ class YoutubeService
         return $this->getChannelIdByHandle('@' . $segments[0]) ?? $this->searchChannelId($segments[0]);
     }
 
+    /**
+     * Get video details by ID.
+     *
+     * @param string $videoId
+     * @return \Google\Service\YouTube\Video|null
+     */
+    public function getVideoDetails(string $videoId)
+    {
+        try {
+            $response = $this->youtube->videos->listVideos('snippet,contentDetails,statistics', [
+                'id' => $videoId
+            ]);
+
+            $items = $response->getItems();
+            if (!empty($items)) {
+                return $items[0];
+            }
+        } catch (Exception $e) {
+            // Log error or handle gracefully
+        }
+
+        return null;
+    }
+
+    /**
+     * Get video captions.
+     *
+     * @param string $videoId
+     * @return \Google\Service\YouTube\Caption[]
+     */
+    public function getVideoCaptions(string $videoId)
+    {
+        try {
+            $response = $this->youtube->captions->listCaptions('snippet', $videoId);
+            return $response->getItems();
+        } catch (Exception $e) {
+            // Log error or handle gracefully
+        }
+
+        return [];
+    }
+
+    /**
+     * Get caption download URL.
+     *
+     * @param string $captionId
+     * @return string
+     */
+    public function getCaptionDownloadUrl(string $captionId): string
+    {
+        return 'https://www.googleapis.com/youtube/v3/captions/' . $captionId;
+    }
+
+    /**
+     * Download caption content.
+     *
+     * @param string $captionId
+     * @param string $format 'sbv', 'scc', 'srt', 'ttml', 'vtt'
+     * @return string|null
+     */
+    public function downloadCaption(string $captionId, string $format = 'vtt'): ?string
+    {
+        try {
+            $response = $this->youtube->captions->download($captionId, ['tfmt' => $format]);
+            return (string) $response->getBody();
+        } catch (Exception $e) {
+            // Log error or handle gracefully
+            return null;
+        }
+    }
+
     protected function getChannelIdByHandle(string $handle): ?string
     {
         try {

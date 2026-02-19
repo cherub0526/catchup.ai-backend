@@ -7,6 +7,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Models\Rss;
 use App\Jobs\Rss\SyncJob;
 use Hypervel\Http\Request;
+use OpenApi\Attributes as OAT;
 use App\Services\YoutubeService;
 use App\Validators\RSSValidator;
 use App\Http\Resources\RSSResource;
@@ -20,6 +21,76 @@ class RSSController extends AbstractController
     /**
      * @throws InvalidRequestException
      */
+    #[OAT\Get(
+        path: '/v1/rss',
+        summary: 'List RSS feed subscriptions',
+        security: [['bearerAuth' => []]],
+        tags: ['RSS'],
+        parameters: [
+            new OAT\Parameter(
+                name: 'type',
+                description: 'Type of RSS feed',
+                in: 'query',
+                required: true,
+                schema: new OAT\Schema(
+                    type: 'string',
+                    enum: ['youtube']
+                )
+            ),
+            new OAT\Parameter(
+                name: 'limit',
+                description: 'Number of items per page (1-10)',
+                in: 'query',
+                required: false,
+                schema: new OAT\Schema(
+                    type: 'integer',
+                    maximum: 10,
+                    minimum: 1
+                )
+            ),
+        ],
+        responses: [
+            new OAT\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OAT\JsonContent(
+                    type: 'array',
+                    items: new OAT\Items(
+                        properties: [
+                            new OAT\Property(property: 'id', type: 'string', example: '01JCXYZ123456789ABCDEFGHIJ'),
+                            new OAT\Property(property: 'type', type: 'string', example: 'youtube'),
+                            new OAT\Property(
+                                property: 'url',
+                                type: 'string',
+                                example: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxxxxxx'
+                            ),
+                            new OAT\Property(property: 'title', type: 'string', example: 'Channel Name'),
+                            new OAT\Property(
+                                property: 'created_at',
+                                type: 'string',
+                                format: 'date-time',
+                                example: '2024-01-01 12:00:00'
+                            ),
+                        ]
+                    )
+                )
+            ),
+            new OAT\Response(
+                response: 400,
+                description: 'Invalid request parameters',
+                content: new OAT\JsonContent(
+                    properties: [
+                        new OAT\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['type' => ['The type field is required.']]
+                        ),
+                    ]
+                )
+            ),
+            new OAT\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function index(Request $request)
     {
         $params = $request->only(['type', 'limit']);
@@ -40,6 +111,72 @@ class RSSController extends AbstractController
     /**
      * @throws InvalidRequestException
      */
+    #[OAT\Post(
+        path: '/api/v1/rss',
+        summary: 'Subscribe to RSS feed',
+        security: [['bearerAuth' => []]],
+        tags: ['RSS'],
+        requestBody: new OAT\RequestBody(
+            required: true,
+            content: new OAT\JsonContent(
+                required: ['type', 'url'],
+                properties: [
+                    new OAT\Property(
+                        property: 'type',
+                        type: 'string',
+                        enum: ['youtube'],
+                        description: 'Type of RSS feed',
+                        example: 'youtube'
+                    ),
+                    new OAT\Property(
+                        property: 'url',
+                        type: 'string',
+                        format: 'url',
+                        description: 'YouTube channel URL or RSS feed URL',
+                        example: 'https://www.youtube.com/@channelname'
+                    ),
+                ]
+            )
+        ),
+        responses: [
+            new OAT\Response(
+                response: 200,
+                description: 'RSS feed subscribed successfully',
+                content: new OAT\JsonContent(
+                    properties: [
+                        new OAT\Property(property: 'id', type: 'string', example: '01JCXYZ123456789ABCDEFGHIJ'),
+                        new OAT\Property(property: 'type', type: 'string', example: 'youtube'),
+                        new OAT\Property(
+                            property: 'url',
+                            type: 'string',
+                            example: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxxxxxx'
+                        ),
+                        new OAT\Property(property: 'title', type: 'string', example: 'Channel Name'),
+                        new OAT\Property(
+                            property: 'created_at',
+                            type: 'string',
+                            format: 'date-time',
+                            example: '2024-01-01 12:00:00'
+                        ),
+                    ]
+                )
+            ),
+            new OAT\Response(
+                response: 400,
+                description: 'Invalid request parameters or invalid RSS feed URL',
+                content: new OAT\JsonContent(
+                    properties: [
+                        new OAT\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['url' => ['The provided URL is not a valid RSS feed.']]
+                        ),
+                    ]
+                )
+            ),
+            new OAT\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function store(Request $request): RSSResource
     {
         $params = $request->only(['type', 'url']);
@@ -82,6 +219,45 @@ class RSSController extends AbstractController
     /**
      * @throws NotFoundHttpException
      */
+    #[OAT\Delete(
+        path: '/api/v1/rss/{rssId}',
+        summary: 'Unsubscribe from RSS feed',
+        security: [['bearerAuth' => []]],
+        tags: ['RSS'],
+        parameters: [
+            new OAT\Parameter(
+                name: 'rssId',
+                in: 'path',
+                required: true,
+                description: 'RSS feed ID',
+                schema: new OAT\Schema(
+                    type: 'string',
+                    example: '01JCXYZ123456789ABCDEFGHIJ'
+                )
+            ),
+        ],
+        responses: [
+            new OAT\Response(
+                response: 200,
+                description: 'Successfully unsubscribed',
+                content: new OAT\JsonContent(
+                    properties: [
+                        new OAT\Property(property: 'message', type: 'string', example: 'ok'),
+                    ]
+                )
+            ),
+            new OAT\Response(
+                response: 404,
+                description: 'RSS feed not found',
+                content: new OAT\JsonContent(
+                    properties: [
+                        new OAT\Property(property: 'message', type: 'string', example: 'Resource not found'),
+                    ]
+                )
+            ),
+            new OAT\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function destroy(Request $request, string $rssId): ResponseInterface
     {
         if (!$rss = $request->user()->rss()->find($rssId)) {
