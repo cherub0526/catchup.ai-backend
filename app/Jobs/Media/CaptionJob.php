@@ -85,7 +85,7 @@ class CaptionJob implements ShouldQueue
         $head = Http::withOptions([
             'allow_redirects' => false,
         ])->withHeaders([
-            'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+            'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept'     => '*/*',
         ])->head($url);
 
@@ -96,7 +96,7 @@ class CaptionJob implements ShouldQueue
         $response = Http::withOptions([
             'allow_redirects' => true,
         ])->withHeaders([
-            'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+            'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept'     => '*/*',
             'range'      => 'bytes=0-',
         ])->sink($savePath)->get($url);

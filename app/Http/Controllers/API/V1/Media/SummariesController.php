@@ -21,7 +21,7 @@ class SummariesController
 
         $summary = $media->summaries()->first();
 
-        return new SummaryResource($summary);
+        return $summary ? new SummaryResource($summary) : [];
     }
 
     public function show(Request $request, string $mediaId, string $summaryId)

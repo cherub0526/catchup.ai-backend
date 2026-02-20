@@ -85,6 +85,7 @@
     "cs-diff": "php-cs-fixer fix --path-mode=intersection `git diff --name-only --diff-filter=ACMRTUXB origin/main..HEAD`",
     "cs-fix": "php-cs-fixer fix $1",
     "analyse": "phpstan analyse --memory-limit 300M -c phpstan.neon",
+    "openapi": "openapi app -o public/openapi.json",
     "start": [
       "Composer\\Config::disableProcessTimeout",
       "php artisan start"
