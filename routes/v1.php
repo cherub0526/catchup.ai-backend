@@ -10,6 +10,7 @@ use App\Http\Controllers\API\V1\UsersController;
 use App\Http\Controllers\API\V1\SettingsController;
 use App\Http\Controllers\API\V1\FeedbacksController;
 use App\Http\Controllers\API\V1\Media\ChatController;
+use App\Http\Controllers\API\V1\Auth\GoogleController;
 use App\Http\Controllers\API\V1\Webhook\GroqController;
 use App\Http\Controllers\API\V1\SubscriptionsController;
 use App\Http\Controllers\API\V1\Media\CaptionsController;
@@ -34,6 +35,11 @@ Route::group('/auth', function () {
             'uses' => ForgotPasswordController::class . '@store',
         ]
     );
+
+    Route::post('/google', [
+        'as'   => 'google.store',
+        'uses' => GoogleController::class . '@store',
+    ]);
 
     Route::put(
         'forgot-password',
